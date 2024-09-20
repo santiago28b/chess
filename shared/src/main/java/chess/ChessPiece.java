@@ -65,6 +65,14 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        switch (pieceType){
+            case KING -> {
+                return new KingMovesCalculator().pieceMoves(board,myPosition);
+            }
+            case QUEEN -> {
+                return new QueenMovesCalculator().pieceMoves(board,myPosition);
+            }
+        }
+        return null;
     }
 }
