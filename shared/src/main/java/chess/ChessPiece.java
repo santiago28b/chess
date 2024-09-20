@@ -78,7 +78,37 @@ public class ChessPiece {
             case ROOK -> {
                 return new RookMovesCalculator().pieceMoves(board,myPosition);
             }
+            case KNIGHT -> {
+                return new KnightMovesCalculator().pieceMoves(board,myPosition);
+            }
+            case PAWN -> {
+                return new PawnMovesCalculator().pieceMoves(board,myPosition);
+            }
         }
         return null;
+    }
+
+    public String toString(){
+        switch (pieceType){
+            case KING -> {
+                return pieceColor == ChessGame.TeamColor.WHITE ? ("K"):("k");
+            }
+            case PAWN -> {
+                return pieceColor == ChessGame.TeamColor.WHITE ? ("P"):("p");
+            }
+            case KNIGHT -> {
+                return pieceColor == ChessGame.TeamColor.WHITE ? ("N"):("n");
+            }
+            case ROOK -> {
+                return pieceColor == ChessGame.TeamColor.WHITE ? ("R"):("r");
+            }
+            case BISHOP -> {
+                return pieceColor == ChessGame.TeamColor.WHITE ? ("B"):("b");
+            }
+            case QUEEN -> {
+                return pieceColor == ChessGame.TeamColor.WHITE ? ("Q"):("q");
+            }
+        }
+        return "0";
     }
 }
