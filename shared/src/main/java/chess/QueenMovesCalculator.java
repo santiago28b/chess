@@ -22,29 +22,29 @@ public class QueenMovesCalculator extends PieceMovesCalculator{
     int row = myPosition.getRow();
     int col =myPosition.getColumn();
 
-    for(int i =0; i <queenRelativeMoves.length; i++){
+    for (int[] queenRelativeMove : queenRelativeMoves) {
       ChessPosition newPosition;
-      boolean obstruction = false;
-        int j = 1;
-        while(!obstruction){
-          int newRow = row + queenRelativeMoves[i][0]*j;
-          int newCol = col + queenRelativeMoves[i][1]*j;
+      boolean obstruction=false;
+      int j=1;
+      while (!obstruction) {
+        int newRow=row + queenRelativeMove[0] * j;
+        int newCol=col + queenRelativeMove[1] * j;
 
-          newPosition = new ChessPosition(newRow,newCol);
-          if(isValidMove(newPosition)){
-            if(board.getPiece(newPosition)==null){
-              validMoves.add(new ChessMove(myPosition,newPosition,null));
-              j++;
-            } else if (board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-              validMoves.add(new ChessMove(myPosition,newPosition,null));
-              obstruction=true;
-            } else{
-              obstruction = true;
-            }
+        newPosition=new ChessPosition(newRow, newCol);
+        if (isValidMove(newPosition)) {
+          if (board.getPiece(newPosition)==null) {
+            validMoves.add(new ChessMove(myPosition, newPosition, null));
+            j++;
+          } else if (board.getPiece(newPosition).getTeamColor()!=board.getPiece(myPosition).getTeamColor()) {
+            validMoves.add(new ChessMove(myPosition, newPosition, null));
+            obstruction=true;
           } else {
-            obstruction = true;
+            obstruction=true;
           }
+        } else {
+          obstruction=true;
         }
+      }
     }
 
     return validMoves;
