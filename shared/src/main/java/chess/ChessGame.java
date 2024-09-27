@@ -99,7 +99,8 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+
+        this.board = board;
     }
 
     /**
@@ -109,5 +110,21 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return board;
+    }
+    private ChessPosition findKing(TeamColor color){
+        ChessPosition kingPosition = null;
+        for(int row = 1; row<=8; row++){
+            for (int col = 1; col<=8; col++){
+                ChessPosition possible = new ChessPosition(row,col);
+                ChessPiece piece = board.getPiece(possible);
+                if(board.getPiece(possible) != null){
+                    if(piece.getTeamColor().equals(color) && piece.getPieceType().equals(ChessPiece.PieceType.KING)){
+                        kingPosition = possible;
+                        return kingPosition;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
