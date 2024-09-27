@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -49,7 +50,33 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        HashSet<ChessMove> realMoves = new HashSet<>();
+        if( board.getPiece(startPosition) == null){
+            return null;
+        }
+        else{
+
+            ChessPiece pieceToMove = board.getPiece(startPosition);
+
+            ChessBoard copyboard = boardCopy(board);
+            // end of copying board
+            ChessBoard original = boardCopy(board);
+
+            for(ChessMove move: pieceToMove.pieceMoves(copyboard,startPosition)){
+
+                this.board = copyboard;
+                simulateMove(copyboard,move);
+                boolean inCheck = isInCheck(pieceToMove.getTeamColor());
+                copyboard = boardCopy(original);
+                this.board = boardCopy(original);
+                if(!inCheck){
+                    realMoves.add(move);
+                }
+            }// end of for loop
+        }
+        //filter moves so have actual moves that do not put the king in danger.
+        return realMoves;
+        //second
     }
 
     /**
@@ -145,5 +172,25 @@ public class ChessGame {
             }
         }
         return null;
+    }
+    private void simulateMove(ChessBoard boardCopy, ChessMove move){
+        ChessPiece piece = boardCopy.getPiece(move.getStartPosition());
+        boardCopy.addPiece(move.getStartPosition(),null); //moving it from original position
+        boardCopy.addPiece(move.getEndPosition(),piece);
+    }
+
+    private ChessBoard boardCopy(ChessBoard board){
+        ChessBoard copy = new ChessBoard();
+        for(int row =1; row <= 8; row++){
+            for(int col = 1; col<=8; col++){
+                ChessPosition position = new ChessPosition(row,col);
+                ChessPiece piece = board.getPiece(position);
+                if(piece!= null){
+                    ChessPiece newPiece = new ChessPiece(piece.getTeamColor(),piece.getPieceType());
+                    copy.addPiece(position,newPiece);
+                }
+            }
+        }// end of copying board
+        return copy;
     }
 }
