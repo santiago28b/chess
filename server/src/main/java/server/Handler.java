@@ -14,15 +14,14 @@ public class Handler {
   }
 
 
-  public static Object registerRequest(Request request, Response response) {
+  public  Object registerRequest(Request request, Response response) {
     var user  = deserialize(request);
-    user = UserService.register(user);
+    user = userService.register((UserData) user);
     return new Gson().toJson(user);
-
   }
 
 
-  private static Object deserialize(Request request){
+  private  Object deserialize(Request request){
     return new Gson().fromJson(request.body(), UserData.class);
   }
 }
