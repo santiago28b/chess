@@ -8,15 +8,19 @@ import model.UserData;
 
 public class UserService {
 
-  private MemoryUserDao userDao;
-  private MemoryAuthDao authDao;
+  private  MemoryUserDao userDao;
+  private  MemoryAuthDao authDao;
 
   public UserService(MemoryUserDao userDao, MemoryAuthDao authDao){
     this.userDao = userDao;
     this.authDao = authDao;
   }
 
-  public AuthData register(UserData user) {
+  public UserService() {
+
+  }
+
+  public AuthData register(UserData user) throws DataAccessException{
 
     try{
       userDao.createUser(user);
