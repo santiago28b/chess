@@ -13,13 +13,13 @@ public class MemoryAuthDao  implements AuthDao{
 
   @Override
   public void clear() {
-
+    authListMemory.clear();
   }
 
   public String createAuth(UserData user) {
     UUID randomCode = UUID.randomUUID();
     String token = randomCode.toString();
-    AuthData authData = new AuthData(token,user.userName());
+    AuthData authData = new AuthData(token,user.username());
     authListMemory.put(token,authData);
     return token;
   }

@@ -20,12 +20,12 @@ public class UserService {
 
   }
 
-  public AuthData register(UserData user) throws DataAccessException{
+  public AuthData register(UserData user){
 
     try{
       userDao.createUser(user);
       String token = authDao.createAuth(user);
-      return new AuthData(token, user.userName());
+      return new AuthData(token, user.username());
     } catch (DataAccessException e){
       throw  new RuntimeException(e.getMessage());
     }
