@@ -24,6 +24,7 @@ public class Server {
         // Register your endpoints and handle exceptions here.
       Spark.post("/user", this::registerRequest);
       Spark.post("/session",this::loginRequest);
+      Spark.delete("/session",this::logoutRequest);
       Spark.delete("/db",this::clear);
 
 
@@ -34,6 +35,20 @@ public class Server {
         Spark.awaitInitialization();
         return Spark.port();
     }
+
+  private Object logoutRequest(Request request, Response response) {
+    String token = request.headers("authorization");
+    try {
+      userService.logoutUser(token);
+      response.status(200);
+      response.type("application/json");
+      return new Gson().toJson(Map.of("message", "Logged out successfully"));
+    }catch (RuntimeException e){
+      response.status(401);
+      response.type("application/json");
+      return new Gson().toJson(Map.of("message",e.getMessage()));
+    }
+  }
 
   private Object loginRequest(Request request, Response response) {
     String body = request.body();
@@ -77,10 +92,17 @@ public class Server {
 
 
   private Object clear(Request request, Response response) {
-    return "";
+    try{
+      userService.clearData();
+      response.status(200);
+      response.type("application/json");
+      return new Gson().toJson(Map.of("status", "success"));
+    } catch (RuntimeException e){
+      response.status(500);
+      response.type("application/json");
+      return new Gson().toJson(Map.of("Message",e.getMessage()));
+    }
   }
-
-
 
   public void stop() {
         Spark.stop();

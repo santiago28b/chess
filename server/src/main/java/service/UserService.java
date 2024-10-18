@@ -40,6 +40,18 @@ public class UserService {
       throw new RuntimeException(e.getMessage());
     }
   }
+  public void logoutUser(String token) {
+    try {
+      authDao.deleteAuth(token);
+    } catch (DataAccessException e){
+      throw new RuntimeException(e.getMessage());
+    }
+  }
 
+
+  public void clearData() {
+    userDao.clear();
+    authDao.clear();
+  }
 
 }
