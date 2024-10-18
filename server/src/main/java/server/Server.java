@@ -15,6 +15,15 @@ public class Server {
   MemoryUserDao userDao = new MemoryUserDao();
   MemoryAuthDao authDao = new MemoryAuthDao();
   private UserService userService = new UserService(userDao,authDao);
+  private final Gson gson = new Gson();
+  private static final int HTTP_OK = 200;
+  private static final int HTTP_FORBIDDEN = 403;
+  private static final int HTTP_BAD_REQUEST = 400;
+  private static final int HTTP_UNAUTHORIZED = 401;
+  private static final int HTTP_ERROR = 500;
+
+
+
 
   public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -40,67 +49,59 @@ public class Server {
     String token = request.headers("authorization");
     try {
       userService.logoutUser(token);
-      response.status(200);
-      response.type("application/json");
-      return new Gson().toJson(Map.of("message", "Logged out successfully"));
+      return createResponse(response,HTTP_OK,Map.of("message", "Logged out successfully"));
     }catch (RuntimeException e){
-      response.status(401);
-      response.type("application/json");
-      return new Gson().toJson(Map.of("message",e.getMessage()));
+      return createErrorResponse(response,HTTP_UNAUTHORIZED,e.getMessage());
     }
   }
 
   private Object loginRequest(Request request, Response response) {
-    String body = request.body();
-    UserData LoginUser = new Gson().fromJson(body, UserData.class);
+    UserData loginUser = gson.fromJson(request.body(), UserData.class);
     try{
-      var authData = userService.login(LoginUser);
-      response.status(200);
-      response.type("application/json");
-      return new Gson().toJson(authData);
+      var authData = userService.login(loginUser);
+     return createResponse(response,HTTP_OK,authData);
     }catch (RuntimeException e){
-      response.status(401);
-      response.type("application/json");
-      return new Gson().toJson(Map.of("message",e.getMessage()));
+      return createErrorResponse(response,HTTP_UNAUTHORIZED,e.getMessage());
 
     }
   }
 
   public  Object registerRequest(Request request, Response response) {
-    String body = request.body();
-    UserData user  =new Gson().fromJson(body,UserData.class);
-
+    UserData user = gson.fromJson(request.body(), UserData.class);
     try{
       var authData = userService.register(user);
-      response.status(200);
-      response.type("application/json");
-      return new Gson().toJson(authData);
+      return createResponse(response,HTTP_OK,authData);
     } catch(RuntimeException e){
-      if(user.password() == null||user.email()== null){
-        response.status(400);
-      }else {
-        response.status(403);
-      }
-      response.type("application/json");
-      return new Gson().toJson(Map.of("message", e.getMessage()));
+      return handleRegistrationError(response,user,e);
     }
   }
-
-
-
-
-
-
   private Object clear(Request request, Response response) {
     try{
       userService.clearData();
-      response.status(200);
-      response.type("application/json");
-      return new Gson().toJson(Map.of("status", "success"));
+      return  createResponse(response,HTTP_OK,Map.of("status", "success"));
     } catch (RuntimeException e){
-      response.status(500);
-      response.type("application/json");
-      return new Gson().toJson(Map.of("Message",e.getMessage()));
+      return  createErrorResponse(response,HTTP_ERROR, e.getMessage());
+    }
+  }
+
+  private Object createResponse(Response response, int statusCode, Object data) {
+    response.status(statusCode);
+    response.type("application/json");
+    return gson.toJson(data);
+  }
+
+  private Object createErrorResponse(Response response, int statusCode, String message) {
+    response.status(statusCode);
+    response.type("application/json");
+    return gson.toJson(Map.of("message", message));
+  }
+
+
+  private Object handleRegistrationError(Response response, UserData user, RuntimeException e) {
+    if (user.password() == null || user.email() == null) {
+      return createErrorResponse(response, HTTP_BAD_REQUEST, e.getMessage());
+    } else {
+      return createErrorResponse(response, HTTP_FORBIDDEN, e.getMessage());
     }
   }
 
