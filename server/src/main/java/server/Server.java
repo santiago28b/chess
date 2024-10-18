@@ -35,10 +35,20 @@ public class Server {
         return Spark.port();
     }
 
-//  private Object loginRequest(Request request, Response response) {
-//    String body = request.body();
-//
-//  }
+  private Object loginRequest(Request request, Response response) {
+    String body = request.body();
+    UserData LoginUser = new Gson().fromJson(body, UserData.class);
+    try{
+      var authData = userService.login(LoginUser);
+      response.status(200);
+      response.type("application/json");
+      return new Gson().toJson(authData);
+    }catch (RuntimeException e){
+      response.status(401);
+      response.type("application/json");
+      return new Gson().toJson(e);
+    }
+  }
 
   public  Object registerRequest(Request request, Response response) {
     String body = request.body();

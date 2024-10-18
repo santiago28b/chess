@@ -30,4 +30,16 @@ public class UserService {
       throw  new RuntimeException(e.getMessage());
     }
   }
+
+  public AuthData login(UserData loginUser) {
+    try {
+      userDao.getData(loginUser);
+      String token = authDao.createAuth(loginUser);
+      return new AuthData(token, loginUser.username());
+    } catch (DataAccessException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+
 }
