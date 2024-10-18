@@ -23,6 +23,7 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
       Spark.post("/user", this::registerRequest);
+      Spark.post("/session",this::loginRequest);
       Spark.delete("/db",this::clear);
 
 
@@ -33,6 +34,11 @@ public class Server {
         Spark.awaitInitialization();
         return Spark.port();
     }
+
+//  private Object loginRequest(Request request, Response response) {
+//    String body = request.body();
+//
+//  }
 
   public  Object registerRequest(Request request, Response response) {
     String body = request.body();
@@ -55,10 +61,9 @@ public class Server {
   }
 
 
-//  private  Object deserialize(Request request){
-//
-//    return new Gson().fromJson(request.body(), UserData.class);
-//  }
+
+
+
 
   private Object clear(Request request, Response response) {
     return "";

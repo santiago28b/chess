@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.UserData;
+import org.eclipse.jetty.server.Authentication;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,11 @@ public class MemoryUserDao implements UserDao {
     }
     return storedUser;
   }
+
+ public String getUsername(UserData user){
+    return user.username();
+ }
+
   @Override
   public void createUser(UserData user) throws DataAccessException {
     if(userListMemory.containsValue(user)){
