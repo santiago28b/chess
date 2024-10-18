@@ -2,12 +2,10 @@ package service;
 
 import dataaccess.MemoryAuthDao;
 import dataaccess.MemoryUserDao;
-import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import spark.utils.Assert;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,7 +25,7 @@ class ServiceTests {
   }
 
   @Test
-  void register() {
+  void validRegister() {
 
     UserData testUser = new UserData(username,password,email);
 
@@ -42,5 +40,23 @@ class ServiceTests {
 
     assertThrows(RuntimeException.class, () -> userService.register(duplicateUser));
   }
+
+  @Test
+  void validLogin(){
+    UserData testUser=new UserData(username,password,email);
+    userService.register(testUser);
+    Assertions.assertEquals(username,userDao.getUsername(testUser));
+    userService.login(testUser);
+    var loginResponse = userService.login(testUser); // Log in the user
+    // Then
+    assertNotNull(loginResponse.authToken());
+
+  }
+  @Test
+  void invalidLogin(){
+    UserData testUser=new UserData(username,password,email);
+    assertThrows(RuntimeException.class, () -> userService.login(testUser));
+  }
+
 
 }
