@@ -46,7 +46,8 @@ public class Server {
     }catch (RuntimeException e){
       response.status(401);
       response.type("application/json");
-      return new Gson().toJson(e);
+      return new Gson().toJson(Map.of("message",e.getMessage()));
+
     }
   }
 

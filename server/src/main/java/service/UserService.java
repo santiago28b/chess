@@ -37,7 +37,7 @@ public class UserService {
       String token = authDao.createAuth(loginUser);
       return new AuthData(token, loginUser.username());
     } catch (DataAccessException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException(e.getMessage());
     }
   }
 
