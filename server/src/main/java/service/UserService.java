@@ -2,16 +2,24 @@ package service;
 
 import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDao;
+import dataaccess.MemoryGameDao;
 import dataaccess.MemoryUserDao;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 
 public class UserService {
 
   private  MemoryUserDao userDao;
   private  MemoryAuthDao authDao;
+  private MemoryGameDao gameDao;
 
   public UserService(MemoryUserDao userDao, MemoryAuthDao authDao){
+    this.userDao = userDao;
+    this.authDao = authDao;
+  }
+  public UserService(MemoryGameDao gameDao,MemoryUserDao userDao, MemoryAuthDao authDao){
+    this.gameDao = gameDao;
     this.userDao = userDao;
     this.authDao = authDao;
   }
@@ -54,4 +62,18 @@ public class UserService {
     authDao.clear();
   }
 
+  public int createGame(String token,String gameName){
+    if(token == null || gameName == null){
+      throw  new IllegalArgumentException("Error: bad request");
+    }
+    try{
+      if(authDao.validateToken(token)){
+        return gameDao.createGame(gameName);
+      } else{
+        throw new RuntimeException("Error: unauthorized");
+      }
+    } catch (DataAccessException e){
+      throw new RuntimeException(e.getMessage());
+    }
+  }
 }

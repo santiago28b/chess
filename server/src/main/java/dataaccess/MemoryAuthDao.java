@@ -28,6 +28,9 @@ public class MemoryAuthDao  implements AuthDao{
   public AuthData getAuth(String username){
     return authListMemory.get(username);
   }
+  public boolean validateToken(String token) {
+    return authListMemory.containsKey(token);
+  }
 
   @Override
   public void deleteAuth(String authToken) throws DataAccessException {

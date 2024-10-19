@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDao;
+import dataaccess.MemoryGameDao;
 import dataaccess.MemoryUserDao;
 import model.UserData;
 import service.UserService;
@@ -14,7 +15,9 @@ public class Server {
 
   MemoryUserDao userDao = new MemoryUserDao();
   MemoryAuthDao authDao = new MemoryAuthDao();
+  MemoryGameDao gameDao = new MemoryGameDao();
   private UserService userService = new UserService(userDao,authDao);
+  private UserService userServiceGame = new UserService(gameDao,userDao,authDao);
   private final Gson gson = new Gson();
   private static final int HTTP_OK = 200;
   private static final int HTTP_FORBIDDEN = 403;
@@ -34,7 +37,9 @@ public class Server {
       Spark.post("/user", this::registerRequest);
       Spark.post("/session",this::loginRequest);
       Spark.delete("/session",this::logoutRequest);
+      Spark.post("/game",this::createGameRequest);
       Spark.delete("/db",this::clear);
+      Spark.put("game",this::joinGameRequest);
 
 
 
@@ -45,12 +50,28 @@ public class Server {
         return Spark.port();
     }
 
+  private Object joinGameRequest(Request request, Response response) {
+
+  }
+
+  private Object createGameRequest(Request request, Response response) {
+    String token = request.headers("Authorization");
+    String gameName = request.body();
+    try{
+     int gameData = userServiceGame.createGame(token,gameName);
+     return createResponse(response,HTTP_OK,Map.of("gameID",gameData));
+    }catch (RuntimeException e){
+      return createErrorResponse(response,HTTP_UNAUTHORIZED,e.getMessage());
+    }
+  }
+
   private Object logoutRequest(Request request, Response response) {
     String token = request.headers("authorization");
     try {
       userService.logoutUser(token);
       return createResponse(response,HTTP_OK,Map.of("message", "Logged out successfully"));
     }catch (RuntimeException e){
+      System.out.println(e.getMessage());
       return createErrorResponse(response,HTTP_UNAUTHORIZED,e.getMessage());
     }
   }
