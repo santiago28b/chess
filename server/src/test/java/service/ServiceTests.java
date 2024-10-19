@@ -58,5 +58,23 @@ class ServiceTests {
     assertThrows(RuntimeException.class, () -> userService.login(testUser));
   }
 
+  @Test
+  void validLogout(){
+    UserData testUser=new UserData(username,password,email);
+    userService.register(testUser);
+    var authdata = userService.login(testUser);
+   String token = authdata.authToken();
+   userService.logoutUser(token);
+   assertNull(authDao.getAuth(username));
+  }
+
+  @Test
+  void invalidLogout(){
+    UserData testUser=new UserData(username,password,email);
+    assertThrows(RuntimeException.class, () -> userService.logoutUser(password));
+  }
+
+
+
 
 }
