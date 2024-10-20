@@ -8,6 +8,8 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 
+import java.util.ArrayList;
+
 public class UserService {
 
   private  MemoryUserDao userDao;
@@ -76,4 +78,40 @@ public class UserService {
       throw new RuntimeException(e.getMessage());
     }
   }
+
+  public void joinGameService(String token, int gameID, String playerColor) {
+    try{
+      if(gameID == 0 || token == null || playerColor == null){
+        throw  new IllegalArgumentException("Error: bad request");
+      }
+      if(!authDao.validateToken(token)){
+        throw new RuntimeException("Error: unauthorized");
+      }
+      if(playerColor.equals("WHITE") && gameDao.getGame(gameID).whiteUser() != null || (playerColor.equals("BLACK") && gameDao.getGame(gameID).blackUser() != null)){
+        throw new RuntimeException("Error: already taken");
+      }
+      GameData game = gameDao.getGame(gameID);
+      if(playerColor.equals("WHITE")){
+        gameDao.updateGame(game.gameId(),authDao.getAuth(token).username(),game.blackUser(),game.gameName(),game.game());
+      } else if (playerColor.equals("BLACK")) {
+        gameDao.updateGame(game.gameId(),game.whiteUser(),authDao.getAuth(token).username(),game.gameName(),game.game());
+      }
+    } catch (DataAccessException e) {
+      throw new RuntimeException(e.getMessage());
+    }
+  }
+
+  public ArrayList<GameData> getGames(String token){
+    try{
+      if(authDao.validateToken(token)){
+        return gameDao.listGames();
+      } else{
+        throw new RuntimeException("Error: unauthorized");
+      }
+    } catch (DataAccessException e){
+      throw new RuntimeException(e.getMessage());
+    }
+  }
+
+
 }

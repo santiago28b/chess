@@ -22,4 +22,27 @@ public class MemoryGameDao implements GameDao {
     return gameId++;
   }
 
+  public GameData getGame(int id){
+    for(int i =0 ; i < games.size(); i++){
+      if(games.get(i).gameId() == id){
+        return games.get(i);
+      }
+    }
+    return null;
+  }
+
+  public void updateGame(int gameId, String whiteUsername, String blackUsername, String gameName, ChessGame game) throws DataAccessException{
+    for (int i = 0; i < games.size(); i++){
+      if (games.get(i).gameId() == gameId){
+        games.set(i, games.get(i).updateGameData(whiteUsername, blackUsername, gameName, game));
+      }
+    }
+  }
+
+  @Override
+  public ArrayList<GameData> listGames() throws DataAccessException {
+    return games;
+  }
+
+
 }

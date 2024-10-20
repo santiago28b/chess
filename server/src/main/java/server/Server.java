@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDao;
 import dataaccess.MemoryGameDao;
 import dataaccess.MemoryUserDao;
+import gameRequestHelper.JoinGameRequest;
 import model.UserData;
 import service.UserService;
 import spark.*;
@@ -40,6 +41,7 @@ public class Server {
       Spark.post("/game",this::createGameRequest);
       Spark.delete("/db",this::clear);
       Spark.put("game",this::joinGameRequest);
+      Spark.get("game",this::listGamesRequest);
 
 
 
@@ -50,8 +52,29 @@ public class Server {
         return Spark.port();
     }
 
-  private Object joinGameRequest(Request request, Response response) {
+  private Object listGamesRequest(Request request, Response response) {
+    String token = request.headers("authorization");
+      try{
+        var games = userServiceGame.getGames(token);
+        System.out.println(games.get(0).whiteUser());
+        return createResponse(response,HTTP_OK,Map.of("games",games));
+      }catch (RuntimeException e){
+        return createErrorResponse(response,HTTP_UNAUTHORIZED,e.getMessage());
+      }
+  }
 
+  private Object joinGameRequest(Request request, Response response) {
+    String token = request.headers("Authorization");
+    String body = request.body();
+    try{
+      JoinGameRequest joinGameRequest = gson.fromJson(body, JoinGameRequest.class);
+      int gameID = joinGameRequest.gameID();
+      String playerColor = joinGameRequest.playerColor();
+      userServiceGame.joinGameService(token,gameID,playerColor);
+      return createResponse(response,HTTP_OK,Map.of("message","joined successfully"));
+    } catch (RuntimeException e) {
+      return createErrorResponse(response,HTTP_UNAUTHORIZED,e.getMessage());
+    }
   }
 
   private Object createGameRequest(Request request, Response response) {
