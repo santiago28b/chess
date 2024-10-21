@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 public abstract class PieceMovesCalculator {
 
@@ -14,4 +15,35 @@ public abstract class PieceMovesCalculator {
     }
     return false;
   }
-}
+
+  protected Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition, int[][] relativeMoves) {
+
+    HashSet<ChessMove> validMoves = new HashSet<>();
+    int row = myPosition.getRow();
+    int col =myPosition.getColumn();
+
+
+    for (int i =0; i<relativeMoves.length; i++){
+      ChessPosition newPosition;
+      int newRow;
+      int newCol;
+
+      newRow = row + relativeMoves[i][0];
+      newCol = col + relativeMoves[i][1];
+
+      newPosition = new ChessPosition(newRow,newCol);
+      if(isValidMove(newPosition)){
+        if(board.getPiece(newPosition)== null){
+          validMoves.add(new ChessMove(myPosition,newPosition,null));
+        } else if (board.getPiece(newPosition).getTeamColor()!= board.getPiece(myPosition).getTeamColor()) {
+          validMoves.add(new ChessMove(myPosition,newPosition,null));
+
+        }
+      }
+
+    }
+    return validMoves;
+  }
+
+
+  }
