@@ -45,5 +45,46 @@ public abstract class PieceMovesCalculator {
     return validMoves;
   }
 
+  protected Collection<ChessMove> calculateMoves2(ChessBoard board, ChessPosition myPosition, int[][] relativeMoves) {
+    HashSet<ChessMove> validMoves = new HashSet<>();
+
+    int row = myPosition.getRow();
+    int col = myPosition.getColumn();
+
+    for(int i = 0; i <relativeMoves.length; i++){
+      ChessPosition newPosition;
+      boolean obstruction = false;
+      int j = 1;
+
+      while(!obstruction){
+        int newRow;
+        int newCol;
+        newRow = row + relativeMoves[i][0]*j;
+        newCol = col + relativeMoves[i][1]*j;
+
+        newPosition = new ChessPosition(newRow,newCol);
+        if(isValidMove(newPosition)){
+          if(board.getPiece(newPosition) == null){
+            validMoves.add(new ChessMove(myPosition,newPosition,null));
+            j++;
+          }
+          else if(board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+            validMoves.add(new ChessMove(myPosition,newPosition,null));
+            obstruction = true;
+          }
+          else{
+            obstruction = true;
+          }
+        }
+        else{
+          obstruction = true;
+        }
+      }
+    }
+    return validMoves;
+  }
+
+
+
 
   }

@@ -12,37 +12,6 @@ public class BishopMovesCalculator extends PieceMovesCalculator {
             {-1,-1},//down left
             {-1,1}, //down right
     };
-
-    HashSet<ChessMove> validMoves = new HashSet<>();
-    int row = myPosition.getRow();
-    int col = myPosition.getColumn();
-
-    for(int i = 0; i <bishopMoves.length; i++){
-      boolean obstruction = false;
-      int j = 1;
-      while(!obstruction){
-        int newRow = row + bishopMoves[i][0]*j;
-        int newCol = col + bishopMoves[i][1]*j;
-
-        ChessPosition newPosition = new ChessPosition(newRow,newCol);
-        if(isValidMove(newPosition)){
-          if(board.getPiece(newPosition)== null){
-            validMoves.add(new ChessMove(myPosition,newPosition,null));
-            j++;
-          } else if (board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-            validMoves.add(new ChessMove(myPosition,newPosition,null));
-            obstruction = true;
-          } else{
-            obstruction = true;
-          }
-        } else{
-          obstruction = true;
-        }
-
-      }
-
-    }
-
-    return validMoves;
+    return calculateMoves2(board, myPosition, bishopMoves);
   }
 }
