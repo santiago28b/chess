@@ -12,7 +12,7 @@ public class MemoryGameDao implements GameDao {
 
   @Override
   public void clear() {
-
+    games.clear();
   }
 
   @Override
@@ -24,7 +24,7 @@ public class MemoryGameDao implements GameDao {
 
   public GameData getGame(int id){
     for(int i =0 ; i < games.size(); i++){
-      if(games.get(i).gameId() == id){
+      if(games.get(i).gameID() == id){
         return games.get(i);
       }
     }
@@ -33,7 +33,7 @@ public class MemoryGameDao implements GameDao {
 
   public void updateGame(int gameId, String whiteUsername, String blackUsername, String gameName, ChessGame game) throws DataAccessException{
     for (int i = 0; i < games.size(); i++){
-      if (games.get(i).gameId() == gameId){
+      if (games.get(i).gameID() == gameId){
         games.set(i, games.get(i).updateGameData(whiteUsername, blackUsername, gameName, game));
       }
     }
@@ -42,6 +42,9 @@ public class MemoryGameDao implements GameDao {
   @Override
   public ArrayList<GameData> listGames() throws DataAccessException {
     return games;
+  }
+  public int size(){
+    return games.size();
   }
 
 

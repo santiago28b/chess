@@ -5,7 +5,11 @@ import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDao;
 import dataaccess.MemoryGameDao;
 import dataaccess.MemoryUserDao;
+import exception.AlreadyTakenException;
+import exception.BadRequestException;
+import exception.UnauthorizedException;
 import gameRequestHelper.JoinGameRequest;
+import model.GameData;
 import model.UserData;
 import service.UserService;
 import spark.*;
@@ -56,7 +60,6 @@ public class Server {
     String token = request.headers("authorization");
       try{
         var games = userServiceGame.getGames(token);
-        System.out.println(games.get(0).whiteUser());
         return createResponse(response,HTTP_OK,Map.of("games",games));
       }catch (RuntimeException e){
         return createErrorResponse(response,HTTP_UNAUTHORIZED,e.getMessage());
@@ -72,16 +75,22 @@ public class Server {
       String playerColor = joinGameRequest.playerColor();
       userServiceGame.joinGameService(token,gameID,playerColor);
       return createResponse(response,HTTP_OK,Map.of("message","joined successfully"));
-    } catch (RuntimeException e) {
-      return createErrorResponse(response,HTTP_UNAUTHORIZED,e.getMessage());
+    } catch (BadRequestException e) {
+      return createErrorResponse(response,HTTP_BAD_REQUEST,e.getMessage());
+    }catch (UnauthorizedException e){
+      return  createErrorResponse(response,HTTP_UNAUTHORIZED,e.getMessage());
+    }catch (AlreadyTakenException e){
+      return createErrorResponse(response,HTTP_FORBIDDEN,e.getMessage());
+    }catch (RuntimeException e){
+      return createErrorResponse(response,HTTP_ERROR,e.getMessage());
     }
   }
 
   private Object createGameRequest(Request request, Response response) {
     String token = request.headers("Authorization");
-    String gameName = request.body();
+    GameData gameName = gson.fromJson(request.body(), GameData.class);
     try{
-     int gameData = userServiceGame.createGame(token,gameName);
+     int gameData = userServiceGame.createGame(token,gameName.gameName());
      return createResponse(response,HTTP_OK,Map.of("gameID",gameData));
     }catch (RuntimeException e){
       return createErrorResponse(response,HTTP_UNAUTHORIZED,e.getMessage());
@@ -121,7 +130,7 @@ public class Server {
   }
   private Object clear(Request request, Response response) {
     try{
-      userService.clearData();
+      userServiceGame.clearData();
       return  createResponse(response,HTTP_OK,Map.of("status", "success"));
     } catch (RuntimeException e){
       return  createErrorResponse(response,HTTP_ERROR, e.getMessage());

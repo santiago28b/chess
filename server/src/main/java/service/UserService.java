@@ -7,6 +7,7 @@ import dataaccess.MemoryUserDao;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import exception.*;
 
 import java.util.ArrayList;
 
@@ -62,6 +63,7 @@ public class UserService {
   public void clearData() {
     userDao.clear();
     authDao.clear();
+    gameDao.clear();
   }
 
   public int createGame(String token,String gameName){
@@ -82,19 +84,19 @@ public class UserService {
   public void joinGameService(String token, int gameID, String playerColor) {
     try{
       if(gameID == 0 || token == null || playerColor == null){
-        throw  new IllegalArgumentException("Error: bad request");
+        throw  new BadRequestException("Error: bad request");
       }
       if(!authDao.validateToken(token)){
-        throw new RuntimeException("Error: unauthorized");
+        throw new UnauthorizedException("Error: unauthorized");
       }
-      if(playerColor.equals("WHITE") && gameDao.getGame(gameID).whiteUser() != null || (playerColor.equals("BLACK") && gameDao.getGame(gameID).blackUser() != null)){
-        throw new RuntimeException("Error: already taken");
+      if(playerColor.equals("WHITE") && gameDao.getGame(gameID).whiteUsername() != null || (playerColor.equals("BLACK") && gameDao.getGame(gameID).blackUsername() != null)){
+        throw new AlreadyTakenException("Error: already taken");
       }
       GameData game = gameDao.getGame(gameID);
       if(playerColor.equals("WHITE")){
-        gameDao.updateGame(game.gameId(),authDao.getAuth(token).username(),game.blackUser(),game.gameName(),game.game());
+        gameDao.updateGame(game.gameID(),authDao.getAuth(token).username(),game.blackUsername(),game.gameName(),game.game());
       } else if (playerColor.equals("BLACK")) {
-        gameDao.updateGame(game.gameId(),game.whiteUser(),authDao.getAuth(token).username(),game.gameName(),game.game());
+        gameDao.updateGame(game.gameID(),game.whiteUsername(),authDao.getAuth(token).username(),game.gameName(),game.game());
       }
     } catch (DataAccessException e) {
       throw new RuntimeException(e.getMessage());
@@ -112,6 +114,4 @@ public class UserService {
       throw new RuntimeException(e.getMessage());
     }
   }
-
-
 }
