@@ -139,7 +139,7 @@ public class ChessGame {
          */
         public boolean isInCheck (TeamColor teamColor){
             ChessPosition kingPosition = findKing(teamColor);
-            if (kingPosition == null) return false; // If the king isn't found, it's not in check
+            if (kingPosition == null) {return false;} // If the king isn't found, it's not in check
 
             for (int row = 1; row <= 8; row++) {
                 for (int col = 1; col <= 8; col++) {
@@ -175,7 +175,7 @@ public class ChessGame {
          * @return True if the specified team is in checkmate
          */
         public boolean isInCheckmate (TeamColor teamColor){
-            if (!isInCheck(teamColor)) return false;
+            if (!isInCheck(teamColor)) {return false;}
 
             HashSet<ChessMove> possibleMoves = getAllPossibleMoves(teamColor);
             return possibleMoves.isEmpty();

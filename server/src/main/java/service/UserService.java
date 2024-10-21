@@ -89,7 +89,10 @@ public class UserService {
       if(!authDao.validateToken(token)){
         throw new UnauthorizedException("Error: unauthorized");
       }
-      if(playerColor.equals("WHITE") && gameDao.getGame(gameID).whiteUsername() != null || (playerColor.equals("BLACK") && gameDao.getGame(gameID).blackUsername() != null)){
+      if(playerColor.equals("WHITE") && gameDao.getGame(gameID).whiteUsername() != null){
+        throw new AlreadyTakenException("Error: already taken");
+      }
+      if(playerColor.equals("BLACK") && gameDao.getGame(gameID).blackUsername() != null){
         throw new AlreadyTakenException("Error: already taken");
       }
       GameData game = gameDao.getGame(gameID);
