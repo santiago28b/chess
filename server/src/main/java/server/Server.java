@@ -1,14 +1,13 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDao;
 import dataaccess.MemoryGameDao;
 import dataaccess.MemoryUserDao;
 import exception.AlreadyTakenException;
 import exception.BadRequestException;
 import exception.UnauthorizedException;
-import gameRequestHelper.JoinGameRequest;
+import gamerequesthelper.JoinGameRequest;
 import model.GameData;
 import model.UserData;
 import service.UserService;
