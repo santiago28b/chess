@@ -29,10 +29,30 @@ public class SQLAuthDao extends AbstractSQLDAO implements AuthDao {
     return null;
   }
 
+
   @Override
   public void deleteAuth(String authToken) throws DataAccessException {
+    // Use a single try-catch to control the flow better
+    try (var conn = DatabaseManager.getConnection()) {
+      // Step 1: Check if the token exists
+      var checkStatement = "SELECT 1 FROM auth WHERE authToken = ?";
+      try (var ps = conn.prepareStatement(checkStatement)) {
+        ps.setString(1, authToken);
+        try (var rs = ps.executeQuery()) {
+          if (!rs.next()) { // If no result, token is not in the table
+            throw new DataAccessException("Error: unauthorized");
+          }
+        }
+      }
+      // Step 2: Delete the token if it exists
+      var deleteStatement = "DELETE FROM auth WHERE authToken = ?";
+      executeUpdate(deleteStatement, authToken);
 
+    } catch (SQLException e) {
+      throw new DataAccessException("Database error during token deletion: " + e.getMessage());
+    }
   }
+
 
   private String generateToken() {
     // Implement token generation logic here (UUID, JWT, etc.)
