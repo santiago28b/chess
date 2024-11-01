@@ -25,7 +25,7 @@ public class Server {
   public Server() {
     try {
       userDao = new SQLUserDao();
-//      authDao = new SQLAuthDao();
+      authDao = new SQLAuthDao();
 //      gameDao = new SQLGameDao();
       userService = new UserService(userDao,authDao);
     } catch (DataAccessException e) {

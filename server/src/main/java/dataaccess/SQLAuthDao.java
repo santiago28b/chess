@@ -3,27 +3,40 @@ package dataaccess;
 import model.AuthData;
 import model.UserData;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
-public class SQLAuthDao implements AuthDao {
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.NULL;
+
+public class SQLAuthDao extends AbstractSQLDAO implements AuthDao {
   @Override
   public void clear() {
 
   }
 
   @Override
-  public String createAuth(UserData user) {
-    return UUID.randomUUID().toString();
+  public String createAuth(UserData user) throws DataAccessException {
+    String token = generateToken();
+    var statement = "INSERT INTO auth (username, authToken) VALUES (?, ?)";
+    executeUpdate(statement, user.username(),token);
+    return token;
   }
 
   @Override
   public AuthData getAuth(String username) {
+
     return null;
   }
 
   @Override
   public void deleteAuth(String authToken) throws DataAccessException {
 
+  }
+
+  private String generateToken() {
+    // Implement token generation logic here (UUID, JWT, etc.)
+    return UUID.randomUUID().toString();
   }
 
   @Override
