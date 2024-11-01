@@ -1,9 +1,6 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDao;
-import dataaccess.MemoryGameDao;
-import dataaccess.MemoryUserDao;
+import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -13,15 +10,15 @@ import java.util.ArrayList;
 
 public class UserService {
 
-  private  MemoryUserDao userDao;
-  private  MemoryAuthDao authDao;
-  private MemoryGameDao gameDao;
+  private UserDao userDao;
+  private  AuthDao authDao;
+  private GameDao gameDao;
 
-  public UserService(MemoryUserDao userDao, MemoryAuthDao authDao){
+  public UserService(UserDao userDao, AuthDao authDao){
     this.userDao = userDao;
     this.authDao = authDao;
   }
-  public UserService(MemoryGameDao gameDao,MemoryUserDao userDao, MemoryAuthDao authDao){
+  public UserService(GameDao gameDao,UserDao userDao, AuthDao authDao){
     this.gameDao = gameDao;
     this.userDao = userDao;
     this.authDao = authDao;
@@ -32,7 +29,6 @@ public class UserService {
   }
 
   public AuthData register(UserData user){
-
     try{
       userDao.createUser(user);
       String token = authDao.createAuth(user);

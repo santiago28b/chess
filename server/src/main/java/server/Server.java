@@ -1,9 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.MemoryAuthDao;
-import dataaccess.MemoryGameDao;
-import dataaccess.MemoryUserDao;
+import dataaccess.*;
 import exception.AlreadyTakenException;
 import exception.BadRequestException;
 import exception.UnauthorizedException;
@@ -17,11 +15,24 @@ import java.util.Map;
 
 public class Server {
 
-  MemoryUserDao userDao = new MemoryUserDao();
-  MemoryAuthDao authDao = new MemoryAuthDao();
-  MemoryGameDao gameDao = new MemoryGameDao();
-  private UserService userService = new UserService(userDao,authDao);
+  UserDao userDao;
+  AuthDao authDao ;
+  GameDao gameDao;
+
+  private final UserService userService; // = new UserService(userDao,authDao);
   private UserService userServiceGame = new UserService(gameDao,userDao,authDao);
+
+  public Server() {
+    try {
+      userDao = new SQLUserDao();
+//      authDao = new SQLAuthDao();
+//      gameDao = new SQLGameDao();
+      userService = new UserService(userDao,authDao);
+    } catch (DataAccessException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   private final Gson gson = new Gson();
   private static final int HTTP_OK = 200;
   private static final int HTTP_FORBIDDEN = 403;
@@ -33,6 +44,7 @@ public class Server {
 
 
   public int run(int desiredPort) {
+        //createDAOs();
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");

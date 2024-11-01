@@ -13,4 +13,5 @@ public interface AuthDao {
   void deleteAuth(String authToken) throws DataAccessException;
 
 
+  boolean validateToken(String token);
 }

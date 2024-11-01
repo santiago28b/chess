@@ -25,4 +25,9 @@ public class SQLGameDao implements GameDao {
   public ArrayList<GameData> listGames() throws DataAccessException {
     return null;
   }
+
+  @Override
+  public GameData getGame(int gameID) {
+    return null;
+  }
 }

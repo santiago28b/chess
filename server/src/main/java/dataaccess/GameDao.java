@@ -12,4 +12,6 @@ int createGame(String gameName) throws DataAccessException;
 void  updateGame(int gameId, String whiteUsername, String blackUsername, String gameName, ChessGame game) throws DataAccessException;
 
   ArrayList<GameData> listGames() throws DataAccessException;
+
+  GameData getGame(int gameID);
 }

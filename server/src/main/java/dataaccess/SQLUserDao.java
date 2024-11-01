@@ -27,10 +27,31 @@ public class SQLUserDao implements UserDao{
 
   @Override
   public void createUser(UserData user) throws DataAccessException {
-      var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+    if (user.username() == null || user.password() == null || user.email() == null) {
+      throw new DataAccessException("Error: bad request - missing required fields");
+    }
+    extracted(user);
+    var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
     String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
-      executeUpdate(statement, user.username(), hashedPassword, user.email());
+    executeUpdate(statement, user.username(), hashedPassword, user.email());
   }
+
+  private static void extracted(UserData user) throws DataAccessException {
+    try (var conn = DatabaseManager.getConnection()) {
+      var checkStatement = "SELECT 1 FROM user WHERE username = ?";
+      try (var ps = conn.prepareStatement(checkStatement)) {
+        ps.setString(1, user.username());
+        try (var rs = ps.executeQuery()) {
+          if (rs.next()) {
+            throw new DataAccessException("Error: username already taken");
+          }
+        }
+      }
+    } catch (SQLException e) {
+      throw new DataAccessException("Different error  " + e.getMessage());
+    }
+  }
+
 
   private int executeUpdate(String statement, Object... params) throws DataAccessException {
     try (var conn = DatabaseManager.getConnection()) {
@@ -56,8 +77,7 @@ public class SQLUserDao implements UserDao{
 
   private final String[] createStatements = {
           """
-            CREATE TABLE IF NOT EXISTS  pet (
-              `id` int NOT NULL AUTO_INCREMENT,
+            CREATE TABLE IF NOT EXISTS  user (
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
