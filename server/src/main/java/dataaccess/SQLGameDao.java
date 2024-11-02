@@ -37,6 +37,9 @@ public class SQLGameDao  extends AbstractSQLDAO implements GameDao {
 
   @Override
   public void updateGame(int gameId, String whiteUsername, String blackUsername, String gameName, ChessGame game) throws DataAccessException {
+    if(gameId == 0){
+      throw new DataAccessException("Game id cannot be 0");
+    }
         var statement = "UPDATE game " + " SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? " +
                 "WHERE gameId = ?";
         try(var conn = DatabaseManager.getConnection()){

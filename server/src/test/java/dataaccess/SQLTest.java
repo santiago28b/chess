@@ -1,6 +1,8 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,11 +99,26 @@ class SQLTest {
     Assertions.assertFalse(authDao.validateToken("fakeToken"));
   }
   @Test
-  void createGame() {
+  void createGame() throws DataAccessException {
+    int id = gameDao.createGame("newGame");
+    Assertions.assertEquals(1,gameDao.getGame(id).gameID());
+  }
+  @Test
+  void invalidCreateGame() throws DataAccessException {
+    assertThrows(DataAccessException.class,() -> gameDao.createGame(null));
   }
 
   @Test
-  void updateGame() {
+  void updateGame() throws DataAccessException {
+    int id = gameDao.createGame("newGame");
+    gameDao.updateGame(id,"newUser",null,"newGame",new ChessGame());
+    Assertions.assertEquals("newUser",gameDao.getGame(id).whiteUsername());
+  }
+  @Test
+  void invalidUpdateGame() throws DataAccessException {
+    int id = gameDao.createGame("newGame");
+    assertThrows(DataAccessException.class,()->gameDao.updateGame(0,null,null
+            ,"newGame",new ChessGame()));
   }
 
   @Test
