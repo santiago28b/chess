@@ -35,14 +35,15 @@ class SQLTest {
 
   @Test
   void validCreateUser() throws DataAccessException {
-    UserData testUser = new UserData(username,password,email);
+    UserData testUser = new UserData("new",password,email);
 
     userService.register(testUser);
-    Assertions.assertEquals(username,userDao.getUsername(testUser));
+    Assertions.assertEquals("new",userDao.getUsername(testUser));
   }
   @Test
   void failToRegister() {
     UserData testUser=new UserData(username, password, email);
+    userService.register(testUser);
     assertThrows(RuntimeException.class, () ->  userService.register(testUser));
   }
 
