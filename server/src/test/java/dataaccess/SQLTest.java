@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.UserService;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SQLTest {
   String username = "testUser";
@@ -122,11 +122,25 @@ class SQLTest {
   }
 
   @Test
-  void listGames() {
+  void listGames() throws DataAccessException {
+    gameDao.createGame("newGame");
+    assertNotNull(gameDao.listGames());
   }
-
   @Test
-  void getGame() {
+  void invalidListGames() throws DataAccessException {
+    gameDao.createGame("newGame");
+    UserData testUser=new UserData(username,password,email);
+    assertThrows(RuntimeException.class,()-> userService.getGames("fakeToken"));
+  }
+  @Test
+  void getGame() throws DataAccessException {
+    int id = gameDao.createGame("newGame");
+    assertNotNull(gameDao.getGame(id));
+  }
+  @Test
+  void invalidGetGame() throws DataAccessException {
+    gameDao.createGame("newGame");
+    assertNull(gameDao.getGame(99));
   }
 
   @Test
