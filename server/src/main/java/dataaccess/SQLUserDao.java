@@ -2,6 +2,8 @@ package dataaccess;
 
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
+
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SQLUserDao extends AbstractSQLDAO implements UserDao{
@@ -19,6 +21,23 @@ public class SQLUserDao extends AbstractSQLDAO implements UserDao{
   @Override
   public UserData getData(UserData user) throws DataAccessException {
     return null;
+  }
+
+  public String getUsername(UserData user) throws DataAccessException {
+    var statement = "SELECT username FROM user WHERE username = ?";
+    String username = null;
+    try(var conn = DatabaseManager.getConnection()){
+      var ps = conn.prepareStatement(statement);
+      ps.setString(1,user.username());
+      try(ResultSet rs = ps.executeQuery()){
+        if(rs.next()){
+          username=rs.getString("username");
+        }
+      }
+    } catch (SQLException e) {
+      throw new DataAccessException("error getting username from database");
+    }
+    return username;
   }
 
   @Override
@@ -44,7 +63,7 @@ public class SQLUserDao extends AbstractSQLDAO implements UserDao{
         }
       }
     } catch (SQLException e) {
-      throw new DataAccessException("Different error  " + e.getMessage());
+      throw new DataAccessException("error  " + e.getMessage());
     }
   }
 }
