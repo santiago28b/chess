@@ -47,6 +47,16 @@ public class AbstractSQLDAO {
               `username` varchar(256) NOT NULL,
               PRIMARY KEY (`authToken`)
             )
+            """,
+          """
+            CREATE TABLE IF NOT EXISTS game(
+              `gameID` int NOT NULL AUTO_INCREMENT,
+              `whiteUsername` varchar(256) DEFAULT NULL,
+              `blackUsername` varchar(256) DEFAULT NULL,
+              `gameName` varchar(256) NOT NULL,
+              `game` TEXT DEFAULT NULL,
+              PRIMARY KEY (`gameID`)
+            )
             """
   };
 

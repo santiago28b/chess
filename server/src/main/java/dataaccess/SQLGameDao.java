@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import com.google.gson.Gson;
 import model.GameData;
 
 import java.sql.SQLException;
@@ -30,7 +31,8 @@ public class SQLGameDao  extends AbstractSQLDAO implements GameDao {
     ChessBoard board = new ChessBoard();
     board.resetBoard();
     game.setBoard(board);
-    return executeUpdate(statement, gameName,game);
+    var gameJson = new Gson().toJson(game);
+    return executeUpdate(statement, null,null,gameName,gameJson);
   }
 
   @Override
@@ -50,19 +52,6 @@ public class SQLGameDao  extends AbstractSQLDAO implements GameDao {
   public GameData getGame(int gameID) {
     return null;
   }
-
-  private final String[] createStatements = {
-          """
-            CREATE TABLE IF NOT EXISTS game(
-              `gameID` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256) DEFAULT NULL,
-              `blackUsername` varchar(256) DEFAULT NULL,
-              `gameName` varchar(256) NOT NULL,
-              `game` TEXT DEFAULT NULL,
-              PRIMARY KEY (`gameID`)
-            )
-            """
-  };
 
   public int executeUpdate(String statement, Object... params) throws DataAccessException {
     try (var conn = DatabaseManager.getConnection(); var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {

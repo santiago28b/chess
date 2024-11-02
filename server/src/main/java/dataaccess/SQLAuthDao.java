@@ -78,15 +78,5 @@ public class SQLAuthDao extends AbstractSQLDAO implements AuthDao {
     }
   }
 
-  private final String[] createStatements = {
-          """
-            CREATE TABLE IF NOT EXISTS  auth (
-              `username` varchar(256) NOT NULL,
-              `token` varchar(256) NOT NULL,
-              PRIMARY KEY (`username`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-  };
-
 
 }
