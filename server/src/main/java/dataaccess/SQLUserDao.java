@@ -11,9 +11,9 @@ public class SQLUserDao extends AbstractSQLDAO implements UserDao{
   }
 
   @Override
-  public void clear() {
-    var statement = "TRUNCATE TABLE users";
-
+  public void clear() throws DataAccessException {
+    var statement = "TRUNCATE TABLE user";
+    executeUpdate(statement);
   }
 
   @Override
