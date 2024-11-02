@@ -12,6 +12,7 @@ public class SQLUserDao extends AbstractSQLDAO implements UserDao{
 
   @Override
   public void clear() {
+    var statement = "TRUNCATE TABLE users";
 
   }
 

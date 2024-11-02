@@ -20,14 +20,15 @@ public class Server {
   GameDao gameDao;
 
   private final UserService userService; // = new UserService(userDao,authDao);
-  private UserService userServiceGame = new UserService(gameDao,userDao,authDao);
+  private final UserService userServiceGame;// = new UserService(gameDao,userDao,authDao);
 
   public Server() {
     try {
       userDao = new SQLUserDao();
       authDao = new SQLAuthDao();
-//      gameDao = new SQLGameDao();
+      gameDao = new SQLGameDao();
       userService = new UserService(userDao,authDao);
+      userServiceGame = new UserService(gameDao,userDao,authDao);
     } catch (DataAccessException e) {
       throw new RuntimeException(e);
     }
@@ -143,7 +144,7 @@ public class Server {
     try{
       userServiceGame.clearData();
       return  createResponse(response,HTTP_OK,Map.of("status", "success"));
-    } catch (RuntimeException e){
+    } catch (RuntimeException | DataAccessException e){
       return  createErrorResponse(response,HTTP_ERROR, e.getMessage());
     }
   }

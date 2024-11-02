@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDao;
 import dataaccess.MemoryGameDao;
 import dataaccess.MemoryUserDao;
@@ -133,7 +134,7 @@ class ServiceTests {
 }
 
 @Test
-  void clear(){
+  void clear() throws DataAccessException {
     UserData testUser=new UserData(username,password,email);
     userService.register(testUser);
    var authdata = userService.login(testUser);

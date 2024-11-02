@@ -6,13 +6,17 @@ import model.UserData;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
-
 public class SQLAuthDao extends AbstractSQLDAO implements AuthDao {
-  @Override
-  public void clear() {
 
+
+  public SQLAuthDao() throws DataAccessException {
+    configureDatabase();
+  }
+
+  @Override
+  public void clear() throws DataAccessException {
+      var statement = "TRUNCATE TABLE auth";
+      executeUpdate(statement);
   }
 
   @Override
@@ -60,8 +64,18 @@ public class SQLAuthDao extends AbstractSQLDAO implements AuthDao {
   }
 
   @Override
-  public boolean validateToken(String token) {
-    return false;
+  public boolean validateToken(String token) throws DataAccessException {
+      var statement = "SELECT 1 FROM auth WHERE authToken = ?";
+    try (var conn = DatabaseManager.getConnection();
+         var ps = conn.prepareStatement(statement)) {
+      ps.setString(1, token);  // Bind the token to the SQL query
+      try (var rs = ps.executeQuery()) {
+        // If there's a result, the token exists in the database
+        return rs.next();
+      }
+    } catch (SQLException | DataAccessException e) {
+      throw new DataAccessException("Error validating token: " + e.getMessage());
+    }
   }
 
   private final String[] createStatements = {

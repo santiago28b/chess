@@ -1,19 +1,36 @@
 package dataaccess;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import model.GameData;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class SQLGameDao implements GameDao {
-  @Override
-  public void clear() {
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.NULL;
 
+public class SQLGameDao  extends AbstractSQLDAO implements GameDao {
+
+
+  public SQLGameDao() throws DataAccessException {
+    configureDatabase();
+  }
+
+  @Override
+  public void clear() throws DataAccessException {
+      var statement = "TRUNCATE TABLE game";
+      executeUpdate(statement);
   }
 
   @Override
   public int createGame(String gameName) throws DataAccessException {
-    return 0;
+    var statement = "INSERT INTO game(whiteUsername, blackUsername, gameName, game) VALUES(?,?,?,?)";
+    ChessGame game = new ChessGame();
+    ChessBoard board = new ChessBoard();
+    board.resetBoard();
+    game.setBoard(board);
+    return executeUpdate(statement, gameName,game);
   }
 
   @Override
@@ -23,6 +40,9 @@ public class SQLGameDao implements GameDao {
 
   @Override
   public ArrayList<GameData> listGames() throws DataAccessException {
+//    var statement = "SELECT * FROM game";
+//    executeUpdate(statement);
+
     return null;
   }
 
@@ -30,4 +50,39 @@ public class SQLGameDao implements GameDao {
   public GameData getGame(int gameID) {
     return null;
   }
+
+  private final String[] createStatements = {
+          """
+            CREATE TABLE IF NOT EXISTS game(
+              `gameID` int NOT NULL AUTO_INCREMENT,
+              `whiteUsername` varchar(256) DEFAULT NULL,
+              `blackUsername` varchar(256) DEFAULT NULL,
+              `gameName` varchar(256) NOT NULL,
+              `game` TEXT DEFAULT NULL,
+              PRIMARY KEY (`gameID`)
+            )
+            """
+  };
+
+  public int executeUpdate(String statement, Object... params) throws DataAccessException {
+    try (var conn = DatabaseManager.getConnection(); var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+      for (var i = 0; i < params.length; i++) {
+        var param = params[i];
+        if (param instanceof String p) ps.setString(i + 1, p);
+        else if (param == null) ps.setNull(i + 1, NULL);
+      }
+      ps.executeUpdate();
+      try (var rs = ps.getGeneratedKeys()) {
+        if (rs.next()) {
+          return rs.getInt(1);  // Return the generated gameID
+        }
+      }
+      return 0;  // If no key was generated, return 0
+    } catch (SQLException e) {
+      throw new DataAccessException("500: Error :( " + e.getMessage());
+    }
+  }
+
+
+
 }
