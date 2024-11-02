@@ -22,6 +22,9 @@ public class SQLAuthDao extends AbstractSQLDAO implements AuthDao {
 
   @Override
   public String createAuth(UserData user) throws DataAccessException {
+    if(user.username() == null){
+      throw new DataAccessException("Username cannot be null");
+    }
     String token = generateToken();
     var statement = "INSERT INTO auth (username, authToken) VALUES (?, ?)";
     executeUpdate(statement, user.username(),token);
@@ -46,8 +49,8 @@ public class SQLAuthDao extends AbstractSQLDAO implements AuthDao {
     } catch (SQLException e) {
       throw new DataAccessException("error could not find auth");
     }
-    assert authData!=null;
-    System.out.println(authData.authToken() + " " + authData.username());
+    //assert authData!=null;
+  //  System.out.println(authData.authToken() + " " + authData.username());
     return authData;
   }
 

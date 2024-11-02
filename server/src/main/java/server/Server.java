@@ -19,8 +19,8 @@ public class Server {
   AuthDao authDao ;
   GameDao gameDao;
 
-  private final UserService userService; // = new UserService(userDao,authDao);
-  private final UserService userServiceGame;// = new UserService(gameDao,userDao,authDao);
+  private final UserService userService;
+  private final UserService userServiceGame;
 
   public Server() {
     try {

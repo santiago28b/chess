@@ -66,4 +66,5 @@ public class SQLUserDao extends AbstractSQLDAO implements UserDao{
       throw new DataAccessException("error  " + e.getMessage());
     }
   }
+
 }
