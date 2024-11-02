@@ -144,7 +144,11 @@ class SQLTest {
   }
 
   @Test
-  void clear() {
+  void clear() throws DataAccessException {
+    gameDao.clear();
+    userDao.clear();
+    authDao.clear();
+    assertEquals(0,gameDao.listGames().size());
   }
 
 
