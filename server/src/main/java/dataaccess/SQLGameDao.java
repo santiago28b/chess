@@ -37,7 +37,19 @@ public class SQLGameDao  extends AbstractSQLDAO implements GameDao {
 
   @Override
   public void updateGame(int gameId, String whiteUsername, String blackUsername, String gameName, ChessGame game) throws DataAccessException {
-
+        var statement = "UPDATE game " + " SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? " +
+                "WHERE gameId = ?";
+        try(var conn = DatabaseManager.getConnection()){
+          var ps = conn.prepareStatement(statement);
+          ps.setString(1, whiteUsername);
+          ps.setString(2,blackUsername);
+          ps.setString(3,gameName);
+          ps.setString(4, new Gson().toJson(game));
+          ps.setInt(5,gameId);
+          ps.executeUpdate();
+        }catch (Exception e){
+          throw new RuntimeException(e);
+        }
   }
 
   @Override
@@ -68,7 +80,6 @@ public class SQLGameDao  extends AbstractSQLDAO implements GameDao {
   public GameData getGame(int gameID) throws DataAccessException {
     GameData gamesito = null;
     var statement = "SELECT * FROM game WHERE gameID = ?";
-
     try (var conn = DatabaseManager.getConnection();
          var ps = conn.prepareStatement(statement)) {
       // Set the gameID parameter in the SQL query
