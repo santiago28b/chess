@@ -89,13 +89,13 @@ public class SQLGameDao  extends AbstractSQLDAO implements GameDao {
       ps.setInt(1, gameId);
       try (var rs = ps.executeQuery()) {
         if (rs.next()) {
-          int ID = rs.getInt("gameId");
+          var Id = rs.getInt("gameID");
           String whiteUsername = rs.getString("whiteUsername");
           String blackUsername = rs.getString("blackUsername");
           String gameName = rs.getString("gameName");
           String gameJson = rs.getString("game");
           ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
-          gamesito = new GameData(ID, whiteUsername, blackUsername, gameName, game);
+          gamesito = new GameData(Id, whiteUsername, blackUsername, gameName, game);
         }
       }
     } catch (SQLException e) {
