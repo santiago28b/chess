@@ -8,7 +8,7 @@ public interface AuthDao {
   void clear() throws DataAccessException;
   String createAuth(UserData user) throws DataAccessException;
 
-  public AuthData getAuth(String username);
+  public AuthData getAuth(String username) throws DataAccessException;
 
   void deleteAuth(String authToken) throws DataAccessException;
 

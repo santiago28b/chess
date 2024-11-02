@@ -3,6 +3,7 @@ package dataaccess;
 import model.AuthData;
 import model.UserData;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -28,9 +29,23 @@ public class SQLAuthDao extends AbstractSQLDAO implements AuthDao {
   }
 
   @Override
-  public AuthData getAuth(String username) {
-
-    return null;
+  public AuthData getAuth(String username) throws DataAccessException {
+    var statement = "SELECT * FROM auth WHERE username = ?";
+    AuthData authData = null;
+    try(var conn = DatabaseManager.getConnection()){
+      var ps = conn.prepareStatement(statement);
+      ps.setString(1,username);
+      try (ResultSet rs = ps.executeQuery()){
+        if(rs.next()){
+          String user= rs.getString("username");
+          String token = rs.getString("authToken");
+          authData = new AuthData(username,token);
+        }
+      }
+    } catch (SQLException e) {
+      throw new DataAccessException("error could not find auth");
+    }
+    return authData;
   }
 
 
