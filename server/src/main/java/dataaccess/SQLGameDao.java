@@ -65,9 +65,32 @@ public class SQLGameDao  extends AbstractSQLDAO implements GameDao {
 
 
   @Override
-  public GameData getGame(int gameID) {
-    return null;
+  public GameData getGame(int gameID) throws DataAccessException {
+    GameData gamesito = null;
+    var statement = "SELECT * FROM game WHERE gameID = ?";
+
+    try (var conn = DatabaseManager.getConnection();
+         var ps = conn.prepareStatement(statement)) {
+      // Set the gameID parameter in the SQL query
+      ps.setInt(1, gameID);
+      try (var rs = ps.executeQuery()) {
+        if (rs.next()) {
+          int ID = rs.getInt("gameID");
+          String whiteUsername = rs.getString("whiteUsername");
+          String blackUsername = rs.getString("blackUsername");
+          String gameName = rs.getString("gameName");
+          String gameJson = rs.getString("game");
+          ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
+          gamesito = new GameData(ID, whiteUsername, blackUsername, gameName, game);
+        }
+      }
+    } catch (SQLException e) {
+      throw new DataAccessException("Error retrieving game: " + e.getMessage());
+    }
+    // Return the GameData object or null if no game was found
+    return gamesito;
   }
+
 
   public int executeUpdate(String statement, Object... params) throws DataAccessException {
     try (var conn = DatabaseManager.getConnection(); var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {

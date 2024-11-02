@@ -13,5 +13,5 @@ void  updateGame(int gameId, String whiteUsername, String blackUsername, String 
 
   ArrayList<GameData> listGames() throws DataAccessException;
 
-  GameData getGame(int gameID);
+  GameData getGame(int gameID) throws DataAccessException;
 }
