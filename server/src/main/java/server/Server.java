@@ -157,10 +157,10 @@ public class Server {
     }
   }
   private Object clear(Request request, Response response) throws DataAccessException {
-    String authToken = request.headers("Authorization");
-    if (!authDao.validateToken(authToken)) {
-      return createErrorResponse(response,HTTP_UNAUTHORIZED,"Invalid token");
-    }
+//    String authToken = request.headers("Authorization");
+//    if (!authDao.validateToken(authToken)) {
+//      return createErrorResponse(response,HTTP_UNAUTHORIZED,"Invalid token");
+//    }
     try{
       userServiceGame.clearData();
       return  createResponse(response,HTTP_OK,Map.of("status", "success"));
