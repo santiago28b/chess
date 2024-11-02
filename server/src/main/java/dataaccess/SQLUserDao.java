@@ -26,13 +26,13 @@ public class SQLUserDao extends AbstractSQLDAO implements UserDao{
       ps.setString(1, user.username());
       try (ResultSet rs = ps.executeQuery()) {
         if (!rs.next()) {
-          throw new DataAccessException("Error: unauthorized - user not found");
+          throw new DataAccessException("Error: unauthorized");
         }
         String storedUsername = rs.getString("username");
         String storedHashedPassword = rs.getString("password");
         String storedEmail = rs.getString("email");
         if (!BCrypt.checkpw(user.password(), storedHashedPassword)) {
-          throw new DataAccessException("Error: unauthorized - password mismatch");
+          throw new DataAccessException("Error: unauthorized - password incorrect");
         }
         return new UserData(storedUsername, storedHashedPassword, storedEmail);
       }
