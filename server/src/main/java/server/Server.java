@@ -18,14 +18,6 @@ public class Server {
   UserDao userDao;
   AuthDao authDao ;
   GameDao gameDao;
-
-//  MemoryUserDao userDao2;
-//  MemoryGameDao gameDao2;
-//  MemoryAuthDao authDao2;
-//
-//  private final UserService userService2;
-//  private final UserService userServiceGame2;
-
   private final UserService userService;
   private final UserService userServiceGame;
 
@@ -39,26 +31,13 @@ public class Server {
     } catch (DataAccessException e) {
       throw new RuntimeException(e);
     }
-//
-//    userDao2 = new MemoryUserDao();
-//    gameDao2 = new MemoryGameDao();
-//    authDao2 = new MemoryAuthDao();
-//    userService2 = new UserService(userDao2,authDao2);
-//    userServiceGame2 = new UserService(gameDao2,userDao2,authDao2);
   }
-
-
-
-
   private final Gson gson = new Gson();
   private static final int HTTP_OK = 200;
   private static final int HTTP_FORBIDDEN = 403;
   private static final int HTTP_BAD_REQUEST = 400;
   private static final int HTTP_UNAUTHORIZED = 401;
   private static final int HTTP_ERROR = 500;
-
-
-
 
   public int run(int desiredPort) {
         //createDAOs();
@@ -157,10 +136,6 @@ public class Server {
     }
   }
   private Object clear(Request request, Response response) throws DataAccessException {
-//    String authToken = request.headers("Authorization");
-//    if (!authDao.validateToken(authToken)) {
-//      return createErrorResponse(response,HTTP_UNAUTHORIZED,"Invalid token");
-//    }
     try{
       userServiceGame.clearData();
       return  createResponse(response,HTTP_OK,Map.of("status", "success"));

@@ -80,13 +80,13 @@ public class SQLGameDao  extends AbstractSQLDAO implements GameDao {
 
 
   @Override
-  public GameData getGame(int gameID) throws DataAccessException {
+  public GameData getGame(int gameId) throws DataAccessException {
     GameData gamesito = null;
     var statement = "SELECT * FROM game WHERE gameID = ?";
     try (var conn = DatabaseManager.getConnection();
          var ps = conn.prepareStatement(statement)) {
       // Set the gameID parameter in the SQL query
-      ps.setInt(1, gameID);
+      ps.setInt(1, gameId);
       try (var rs = ps.executeQuery()) {
         if (rs.next()) {
           int ID = rs.getInt("gameID");
@@ -110,8 +110,8 @@ public class SQLGameDao  extends AbstractSQLDAO implements GameDao {
     try (var conn = DatabaseManager.getConnection(); var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
       for (var i = 0; i < params.length; i++) {
         var param = params[i];
-        if (param instanceof String p) ps.setString(i + 1, p);
-        else if (param == null) ps.setNull(i + 1, NULL);
+        if (param instanceof String p){ ps.setString(i + 1, p);}
+        else if (param == null){ ps.setNull(i + 1, NULL);}
       }
       ps.executeUpdate();
       try (var rs = ps.getGeneratedKeys()) {
