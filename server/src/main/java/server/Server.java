@@ -19,6 +19,13 @@ public class Server {
   AuthDao authDao ;
   GameDao gameDao;
 
+//  MemoryUserDao userDao2;
+//  MemoryGameDao gameDao2;
+//  MemoryAuthDao authDao2;
+//
+//  private final UserService userService2;
+//  private final UserService userServiceGame2;
+
   private final UserService userService;
   private final UserService userServiceGame;
 
@@ -32,7 +39,16 @@ public class Server {
     } catch (DataAccessException e) {
       throw new RuntimeException(e);
     }
+//
+//    userDao2 = new MemoryUserDao();
+//    gameDao2 = new MemoryGameDao();
+//    authDao2 = new MemoryAuthDao();
+//    userService2 = new UserService(userDao2,authDao2);
+//    userServiceGame2 = new UserService(gameDao2,userDao2,authDao2);
   }
+
+
+
 
   private final Gson gson = new Gson();
   private static final int HTTP_OK = 200;
