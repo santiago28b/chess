@@ -25,26 +25,29 @@ public class SQLAuthDao extends AbstractSQLDAO implements AuthDao {
     String token = generateToken();
     var statement = "INSERT INTO auth (username, authToken) VALUES (?, ?)";
     executeUpdate(statement, user.username(),token);
+    System.out.println(token);
     return token;
   }
 
   @Override
-  public AuthData getAuth(String username) throws DataAccessException {
-    var statement = "SELECT * FROM auth WHERE username = ?";
+  public AuthData getAuth(String authToken) throws DataAccessException {
+    var statement = "SELECT * FROM auth WHERE authToken  = ?";
     AuthData authData = null;
     try(var conn = DatabaseManager.getConnection()){
       var ps = conn.prepareStatement(statement);
-      ps.setString(1,username);
+      ps.setString(1,authToken);
       try (ResultSet rs = ps.executeQuery()){
         if(rs.next()){
           String user= rs.getString("username");
           String token = rs.getString("authToken");
-          authData = new AuthData(username,token);
+          authData = new AuthData(token,user);
         }
       }
     } catch (SQLException e) {
       throw new DataAccessException("error could not find auth");
     }
+    assert authData!=null;
+    System.out.println(authData.authToken() + " " + authData.username());
     return authData;
   }
 

@@ -45,7 +45,8 @@ public class AbstractSQLDAO {
             CREATE TABLE IF NOT EXISTS auth (
               `authToken` varchar(256) NOT NULL,
               `username` varchar(256) NOT NULL,
-              PRIMARY KEY (`authToken`)
+              PRIMARY KEY (`authToken`),
+              FOREIGN KEY (`username`) REFERENCES user(`username`) ON DELETE CASCADE
             )
             """,
           """
@@ -55,7 +56,9 @@ public class AbstractSQLDAO {
               `blackUsername` varchar(256) DEFAULT NULL,
               `gameName` varchar(256) NOT NULL,
               `game` TEXT DEFAULT NULL,
-              PRIMARY KEY (`gameID`)
+              PRIMARY KEY (`gameID`),
+              FOREIGN KEY (`whiteUsername`) REFERENCES user(`username`) ON DELETE SET NULL,
+              FOREIGN KEY (`blackUsername`) REFERENCES user(`username`) ON DELETE SET NULL
             )
             """
   };

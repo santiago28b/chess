@@ -93,8 +93,10 @@ public class UserService {
       }
       GameData game = gameDao.getGame(gameID);
       if(playerColor.equals("WHITE")){
+        System.out.println(authDao.getAuth(token).username());
         gameDao.updateGame(game.gameID(),authDao.getAuth(token).username(),game.blackUsername(),game.gameName(),game.game());
       } else if (playerColor.equals("BLACK")) {
+
         gameDao.updateGame(game.gameID(),game.whiteUsername(),authDao.getAuth(token).username(),game.gameName(),game.game());
       }
     } catch (DataAccessException e) {
