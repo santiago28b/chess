@@ -6,7 +6,6 @@ import gamerequesthelper.JoinGameRequest;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
