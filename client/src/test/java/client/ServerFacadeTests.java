@@ -7,6 +7,8 @@ import org.junit.jupiter.api.*;
 import server.Server;
 import ui.ServerFacade;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -100,6 +102,23 @@ public class ServerFacadeTests {
             serverFacade.createGame("newGame", null);
         });
     }
+
+    @Test
+    public void listGames() throws ServerFacade.ResponseException {
+        UserData newUser=new UserData("testUser", "testPassword", "testUser@example.com");
+        AuthData authData=serverFacade.login(newUser);
+       serverFacade.createGame("newGame", authData);
+       ArrayList<GameData> games=serverFacade.listGames(authData);
+       assertNotNull(games, "Game should not be null");
+       games.forEach(System.out::println);
+    }
+    @Test
+    public void invalidListGames() throws ServerFacade.ResponseException {
+        assertThrows(ServerFacade.ResponseException.class, () -> {
+            serverFacade.listGames(null);
+        });
+    }
+
 
 
 
