@@ -15,6 +15,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 public class ServerFacade {
   private final String serverUrl;
@@ -39,7 +40,8 @@ public class ServerFacade {
 
   public GameData createGame(String gameName, AuthData authData) throws ResponseException {
     var path = "/game";
-    return this.makeRequest("POST", path, authData, GameData.class,null);
+    Map<String, String> requestBody = Map.of("gameName", gameName);
+    return this.makeRequest("POST", path, requestBody, GameData.class,authData);
   }
 
   public ArrayList<GameData> listGames(AuthData authData) throws ResponseException {

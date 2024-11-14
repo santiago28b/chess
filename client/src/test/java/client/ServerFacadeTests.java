@@ -1,6 +1,7 @@
 package client;
 
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -87,7 +88,18 @@ public class ServerFacadeTests {
             serverFacade.logout(null);
         });
     }
-
+    @Test
+    public void validCreate() throws ServerFacade.ResponseException {
+        UserData newUser=new UserData("testUser", "testPassword", "testUser@example.com");
+        AuthData authData=serverFacade.login(newUser);
+        GameData newGame = serverFacade.createGame("newGame", authData);
+        assertNotNull(newGame, "Game should not be null");
+    }
+    @Test void invalidCreate() throws ServerFacade.ResponseException {
+        assertThrows(ServerFacade.ResponseException.class, () -> {
+            serverFacade.createGame("newGame", null);
+        });
+    }
 
 
 
