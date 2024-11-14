@@ -73,6 +73,20 @@ public class ServerFacadeTests {
             serverFacade.login(newUser);
         });
     }
+    @Test
+    public void validLogout() throws ServerFacade.ResponseException {
+        UserData newUser=new UserData("testUser", "testPassword", "testUser@example.com");
+        AuthData authData=serverFacade.login(newUser);
+        assertNotNull(authData, "AuthData should not be null");
+        assertNotNull(authData.authToken(), "Auth token should not be null");
+        serverFacade.logout(authData);
+    }
+    @Test
+    public void invalidLogout() throws ServerFacade.ResponseException {
+        assertThrows(ServerFacade.ResponseException.class, () -> {
+            serverFacade.logout(null);
+        });
+    }
 
 
 
