@@ -6,8 +6,7 @@ import org.junit.jupiter.api.*;
 import server.Server;
 import ui.ServerFacade;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
@@ -17,11 +16,11 @@ public class ServerFacadeTests {
 
     @BeforeAll
     public static void init() {
-        server = new Server();
-        var port = server.run(0);
+        server=new Server();
+        var port=server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        String serverUrl = "http://localhost:" + port;
-        serverFacade = new ServerFacade(serverUrl);
+        String serverUrl="http://localhost:" + port;
+        serverFacade=new ServerFacade(serverUrl);
     }
 
     @AfterAll
@@ -33,11 +32,11 @@ public class ServerFacadeTests {
     @Test
     public void testRegisterSuccess() {
         // Arrange
-        UserData newUser = new UserData("testUser", "testPassword", "testUser@example.com");
+        UserData newUser=new UserData("testUser", "testPassword", "testUser@example.com");
 
         // Act
         try {
-            AuthData authData = serverFacade.register(newUser);
+            AuthData authData=serverFacade.register(newUser);
 
             // Assert
             assertNotNull(authData, "AuthData should not be null");
@@ -47,5 +46,35 @@ public class ServerFacadeTests {
             fail("Registration failed: " + e.getMessage());
         }
     }
+
+    @Test
+    public void testRegisterDuplicateUser() throws ServerFacade.ResponseException {
+        // Arrange
+        UserData duplicateUser=new UserData("new", "password", "duplicateUser@example.com");
+        serverFacade.register(duplicateUser); // Register the user first
+        assertThrows(ServerFacade.ResponseException.class, () -> {
+            serverFacade.register(duplicateUser); // Try registering the same user again
+        });
+    }
+
+    @Test
+    public void testLoginSuccess() throws ServerFacade.ResponseException {
+        UserData newUser=new UserData("testUser", "testPassword", "testUser@example.com");
+        AuthData authData=serverFacade.login(newUser);
+        assertNotNull(authData, "AuthData should not be null");
+        assertNotNull(authData.authToken(), "Auth token should not be null");
+        System.out.println("Login successful with token: " + authData.authToken());
+    }
+
+    @Test
+    public void invalidLogin() throws ServerFacade.ResponseException {
+        UserData newUser=new UserData("paila", "testPassword", "testUser@example.com");
+        assertThrows(ServerFacade.ResponseException.class, () -> {
+            serverFacade.login(newUser);
+        });
+    }
+
+
+
 
 }

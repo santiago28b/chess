@@ -34,7 +34,7 @@ public class ServerFacade {
   }
   public void logout(AuthData authData) throws ResponseException {
     var path = "/session";
-    this.makeRequest("DELETE", path, authData, AuthData.class,null);
+    this.makeRequest("DELETE", path, null, null,authData);
   }
 
   public GameData createGame(String gameName, AuthData authData) throws ResponseException {
@@ -116,7 +116,7 @@ public class ServerFacade {
 
   //inner class created below
 
-  private class ResponseException extends Exception {
+  public class ResponseException extends Exception {
     private final int statusCode;
     public ResponseException(int statusCode, String message) {
       super(message);
