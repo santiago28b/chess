@@ -26,6 +26,17 @@ public class ServerFacadeTests {
         serverFacade=new ServerFacade(serverUrl);
     }
 
+    @BeforeEach
+    @Test
+    public void clear() throws ServerFacade.ResponseException {
+        serverFacade.clear();
+        UserData newUser=new UserData("testUser", "testPassword", "testUser@example.com");
+        serverFacade.register(newUser);
+        AuthData authData = serverFacade.login(newUser);
+        ArrayList<GameData> games = serverFacade.listGames(authData);
+        assertEquals(0,games.size());
+
+    }
     @AfterAll
     static void stopServer() {
         server.stop();
@@ -33,21 +44,14 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void testRegisterSuccess() {
+    public void testRegisterSuccess() throws ServerFacade.ResponseException {
         // Arrange
-        UserData newUser=new UserData("testUser", "testPassword", "testUser@example.com");
-
-        // Act
-        try {
+        UserData newUser=new UserData("newUser", "testPassword", "testUser@example.com");
             AuthData authData=serverFacade.register(newUser);
-
-            // Assert
             assertNotNull(authData, "AuthData should not be null");
             assertNotNull(authData.authToken(), "Auth token should not be null");
             System.out.println("Registration successful with token: " + authData.authToken());
-        } catch (Exception e) {
-            fail("Registration failed: " + e.getMessage());
-        }
+
     }
 
     @Test
@@ -116,6 +120,32 @@ public class ServerFacadeTests {
     public void invalidListGames() throws ServerFacade.ResponseException {
         assertThrows(ServerFacade.ResponseException.class, () -> {
             serverFacade.listGames(null);
+        });
+    }
+    @Test
+    public void joinGame() throws ServerFacade.ResponseException {
+        UserData newUser = new UserData("testUser", "testPassword", "testUser@example.com");
+        AuthData authData = serverFacade.login(newUser);
+        // Precondition: Ensure a game exists
+        GameData createdGame = serverFacade.createGame("testGame", authData);
+        int gameId = createdGame.gameID(); // Assuming GameData has getGameId()
+        // Act: Join the game
+        serverFacade.joinGame("WHITE", gameId, authData);
+        // Assert: Validate the user joined the game
+        ArrayList<GameData> games = serverFacade.listGames(authData);
+        boolean found = false;
+        for (GameData game : games) {
+            if (game.gameID() == gameId) {
+                assertEquals(game.whiteUsername(), newUser.username(), "The white player should match the logged-in user");
+                found = true;
+            }
+        }
+        assertTrue(found, "Game with the correct ID should be found in the user's game list");
+    }
+    @Test
+    public void invalidJoinGame() throws ServerFacade.ResponseException {
+        assertThrows(ServerFacade.ResponseException.class, () -> {
+            serverFacade.joinGame("WHITE",1,null);
         });
     }
 
