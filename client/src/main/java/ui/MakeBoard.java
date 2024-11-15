@@ -31,7 +31,7 @@ public class MakeBoard {
 
     for(int start = startRow; start != lastRow; start+=increment){
 
-      System.out.print((whitePerspective ? 8 - start : start+1) + " | ");
+      System.out.print((whitePerspective ? start+1 : start+increment) + " | ");
 
       for (int col = 0; col < 8; col++) {
         System.out.print(" . "); // Placeholder for now
