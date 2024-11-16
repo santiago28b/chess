@@ -8,6 +8,7 @@ public class Main {
 
         MakeBoard makeBoard = new MakeBoard(new ChessBoard());
         makeBoard.renderBoard(true);
+        System.out.println();
         makeBoard.renderBoard(false);
     }
 

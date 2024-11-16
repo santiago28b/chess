@@ -39,7 +39,7 @@ public class MakeBoard {
        String squareColor = ((start + col) % 2 == 0) ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY :
                EscapeSequences.SET_BG_COLOR_DARK_GREY;
 
-       ChessPiece piece = board.getPiece(new ChessPosition(startRow+1,col+1));
+       ChessPiece piece = board.getPiece(new ChessPosition(start+1,col+1));
        String pieceSymbol = putPiece(piece);
 
        System.out.print(squareColor + pieceSymbol + EscapeSequences.RESET_BG_COLOR);
@@ -47,11 +47,12 @@ public class MakeBoard {
       System.out.println();
     }
     // Print column labels
-    System.out.println("    a   b   c   d   e   f   g   h");
+    System.out.println("     a  b  c  d  e  f  g  h");
 
     }
 
     private String putPiece(ChessPiece piece){
+      if (piece == null) return EscapeSequences.EMPTY;
         switch (piece.getPieceType()){
           case KING:
             return piece.getTeamColor() == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_KING: EscapeSequences.BLACK_KING;
