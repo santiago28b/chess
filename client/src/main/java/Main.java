@@ -11,7 +11,7 @@ public class Main {
 //        makeBoard.renderBoard(true);
 //        System.out.println();
 //        makeBoard.renderBoard(false);
-        var serverUrl = "http://localhost:8080";
+        var serverUrl = "http://localhost:8081";
         if(args.length == 1) {
             serverUrl = args[0];
         }
