@@ -9,7 +9,7 @@ public class ChessClient {
 
   private String visitorName = null;
   private final ServerFacade server;
-  private final String serverUrl;
+  //private final String serverUrl;
   private State state = State.SIGNEDOUT;
   Scanner scanner = new Scanner(System.in);
 
@@ -17,9 +17,8 @@ public class ChessClient {
 
 
   public  ChessClient(String serverUrl) {
-
     server = new ServerFacade(serverUrl);
-    this.serverUrl = serverUrl;
+
   }
 
   public String eval(String input) {
@@ -27,8 +26,8 @@ public class ChessClient {
     var cmd = (tokens.length > 0) ? tokens[0] : "help";
     var params = Arrays.copyOfRange(tokens, 1, tokens.length);
     return switch (cmd) {
-      case "login" -> login(params);
-      case "register" -> register(params);
+      case "login" -> login();
+      case "register" -> register();
 //        case "list" -> listPets();
         case "logout" -> logout();
 //        case "adopt" -> adoptPet(params);
@@ -37,6 +36,10 @@ public class ChessClient {
       default -> help();
     };
   }
+
+//  public void start() {
+//    displayPreLoginMenu();
+//  }
 
   private String logout() {
     assertSignedIn();
@@ -50,11 +53,7 @@ public class ChessClient {
     }
   }
 
-  private String help() {
-
-  }
-
-  private String login(String[] params) {
+  private String login() {
     System.out.println("Username: ");
     String username = scanner.nextLine();
     System.out.println("Password: ");
@@ -70,7 +69,7 @@ public class ChessClient {
     }
   }
 
-  private String register(String[] params) {
+  private String register() {
     System.out.println("New username: ");
     String username = scanner.nextLine();
     System.out.println("New password: ");
@@ -88,6 +87,50 @@ public class ChessClient {
       throw new RuntimeException(e);
     }
   }
+
+
+
+  private void displayMenu() {
+    switch (state) {
+      case SIGNEDIN:
+        System.out.println("\nYou are signed in as " + visitorName + ".");
+        System.out.println("Available commands:");
+        System.out.println("- startgame: Start a new game.");
+        System.out.println("- listgames: List active games.");
+        System.out.println("- logout: Sign out of your account.");
+        System.out.println("- quit: Exit the application.");
+        System.out.println("- help: Show this menu.");
+
+      case SIGNEDOUT:
+        System.out.println("Register");
+        System.out.println("login");
+        System.out.println("quit");
+        System.out.println("help");
+    }
+  }
+
+  public String help() {
+    if (state == State.SIGNEDOUT) {
+      return """
+                    - Register
+                    - Login
+                    - Quit
+                    - Help
+                    """;
+    }
+    return """
+                - list games
+                - Observe game
+                - list game
+                - create Game
+                - logout
+                - join Game
+                - quit
+                """;
+  }
+
+
+
 
 
 
