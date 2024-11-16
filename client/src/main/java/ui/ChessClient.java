@@ -1,7 +1,10 @@
 package ui;
 
+import model.AuthData;
+import model.GameData;
 import model.UserData;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -11,6 +14,7 @@ public class ChessClient {
   private final ServerFacade server;
   //private final String serverUrl;
   private State state = State.SIGNEDOUT;
+  private AuthData authData;
   Scanner scanner = new Scanner(System.in);
 
 
@@ -25,21 +29,71 @@ public class ChessClient {
     var tokens = input.toLowerCase().split(" ");
     var cmd = (tokens.length > 0) ? tokens[0] : "help";
     var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-    return switch (cmd) {
-      case "login" -> login();
-      case "register" -> register();
-//        case "list" -> listPets();
-        case "logout" -> logout();
-//        case "adopt" -> adoptPet(params);
-//        case "adoptall" -> adoptAllPets();
+
+    if(state == State.SIGNEDOUT) {
+      return switch (cmd) {
+        case "login" -> login();
+        case "register" -> register();
+        case "help" -> help();
         case "quit" -> "quit";
-      default -> help();
-    };
+        default -> help();
+      };
+    } else if (state == State.SIGNEDIN) {
+      return switch (cmd) {
+        case "creategame" -> createGame();
+        case "list" -> listGames();
+//        case "joingame" -> joinGame();
+//        case "observegame" -> observeGame();
+        case "logout" -> logout();
+        case "help" -> help();
+        case "quit" -> "quit";
+        default -> "Invalid command. Type 'help' for available commands.";
+      };
+    }
+    return "unknown";
   }
 
-//  public void start() {
-//    displayPreLoginMenu();
-//  }
+  private String listGames() {
+    assertSignedIn();
+    ArrayList<GameData> games =null;
+    try {
+      games=server.listGames(authData);
+    } catch (ServerFacade.ResponseException e) {
+      return "there was an error " + e.getMessage();
+    }
+    if(games.isEmpty()) {
+      return "No games found";
+    } else{
+      StringBuilder result = new StringBuilder("List of Available Games:\n");
+      int gameCount = 1;
+     for(GameData game: games) {
+       result.append(gameCount).append(". ")
+               .append("Game Name: ").append(game.gameName()).append(" -- ")
+               .append("White Player: ").append(game.whiteUsername() != null ?
+                       game.whiteUsername() : "No player yet").append(" -- ")
+               .append("Black Player: ").append(game.blackUsername() != null ?
+                       game.blackUsername() : "No player yet")
+               .append("\n");
+       gameCount++;
+     }
+     return result.toString();
+    }
+
+  }
+
+  private String createGame() {
+    assertSignedIn();
+    System.out.println("Choose a name for the game: ");
+    String gameName = scanner.nextLine();
+    assertNotNull(gameName);
+    try{
+      server.createGame(gameName,authData);
+    } catch (ServerFacade.ResponseException e) {
+      return "there was an error " + e.getMessage();
+    }
+      return gameName + " has been created";
+  }
+
 
   private String logout() {
     assertSignedIn();
@@ -53,6 +107,12 @@ public class ChessClient {
     }
   }
 
+  private void assertNotNull(String name) {
+    if (name == null || name.trim().isEmpty()) {
+      throw new RuntimeException("You must provide a name");
+    }
+  }
+
   private String login() {
     System.out.println("Username: ");
     String username = scanner.nextLine();
@@ -60,12 +120,12 @@ public class ChessClient {
     String password = scanner.nextLine();
     UserData  existent = new UserData(username,password,null);
     try{
-      var authdata = server.login(existent);
+      authData = server.login(existent);
       state = State.SIGNEDIN;
       visitorName = username;
       return "Login successful! Welcome, " + visitorName;
     } catch (ServerFacade.ResponseException e) {
-      throw new RuntimeException(e);
+      return "login failed, probably invalid credentials. " + e.getMessage();
     }
   }
 
@@ -76,6 +136,11 @@ public class ChessClient {
     String password = scanner.nextLine();
     System.out.println("Email: ");
     String email = scanner.nextLine();
+    if(username == null || password == null) {
+      return "credentials can't be null";
+    } else if (username.trim().isEmpty() || password.trim().isEmpty()) {
+      return "username or password can't be empty";
+    }
 
     try{
       UserData newUser = new UserData(username, password, email);
@@ -84,30 +149,28 @@ public class ChessClient {
       visitorName = username;
       return "Registration successful! You are now signed in as " + visitorName;
     } catch (ServerFacade.ResponseException e) {
-      throw new RuntimeException(e);
+      return "Registration failed, probably invalid credentials. " + e.getMessage();
     }
   }
 
-
-
-  private void displayMenu() {
-    switch (state) {
-      case SIGNEDIN:
-        System.out.println("\nYou are signed in as " + visitorName + ".");
-        System.out.println("Available commands:");
-        System.out.println("- startgame: Start a new game.");
-        System.out.println("- listgames: List active games.");
-        System.out.println("- logout: Sign out of your account.");
-        System.out.println("- quit: Exit the application.");
-        System.out.println("- help: Show this menu.");
-
-      case SIGNEDOUT:
-        System.out.println("Register");
-        System.out.println("login");
-        System.out.println("quit");
-        System.out.println("help");
-    }
-  }
+//  private void displayMenu() {
+//    switch (state) {
+//      case SIGNEDIN:
+//        System.out.println("\nYou are signed in as " + visitorName + ".");
+//        System.out.println("Available commands:");
+//        System.out.println("- startgame: Start a new game.");
+//        System.out.println("- listgames: List active games.");
+//        System.out.println("- logout: Sign out of your account.");
+//        System.out.println("- quit: Exit the application.");
+//        System.out.println("- help: Show this menu.");
+//
+//      case SIGNEDOUT:
+//        System.out.println("Register");
+//        System.out.println("login");
+//        System.out.println("quit");
+//        System.out.println("help");
+//    }
+//  }
 
   public String help() {
     if (state == State.SIGNEDOUT) {
