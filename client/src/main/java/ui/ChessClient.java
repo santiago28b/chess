@@ -22,8 +22,6 @@ public class ChessClient {
   public  ChessClient(String serverUrl) {
     server = new ServerFacade(serverUrl);
     makeBoard = new MakeBoard(new ChessBoard());
-
-
   }
 
   public String eval(String input) {
@@ -218,26 +216,6 @@ public class ChessClient {
       return "Registration failed, probably invalid credentials. " + e.getMessage();
     }
   }
-
-//  private void displayMenu() {
-//    switch (state) {
-//      case SIGNEDIN:
-//        System.out.println("\nYou are signed in as " + visitorName + ".");
-//        System.out.println("Available commands:");
-//        System.out.println("- startgame: Start a new game.");
-//        System.out.println("- listgames: List active games.");
-//        System.out.println("- logout: Sign out of your account.");
-//        System.out.println("- quit: Exit the application.");
-//        System.out.println("- help: Show this menu.");
-//
-//      case SIGNEDOUT:
-//        System.out.println("Register");
-//        System.out.println("login");
-//        System.out.println("quit");
-//        System.out.println("help");
-//    }
-//  }
-
   public String help() {
     if (state == State.SIGNEDOUT) {
       return EscapeSequences.SET_TEXT_COLOR_BLUE + """ 

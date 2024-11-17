@@ -12,12 +12,10 @@ public class Repl {
   public void run() {
     System.out.println(EscapeSequences.SET_TEXT_BOLD + "Welcome to Chess. Sign in or Register to start." + EscapeSequences.RESET_TEXT_COLOR);
     System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN + client.help() + EscapeSequences.RESET_TEXT_COLOR);
-    //System.out.print(client.help());
 
     Scanner scanner = new Scanner(System.in);
     var result = "";
     while (!result.equals("quit")) {
-     // printPrompt();
       String line = scanner.nextLine();
 
       try {
@@ -30,9 +28,5 @@ public class Repl {
     }
     System.out.println();
   }
-
-//  private void printPrompt() {
-//    System.out.print("\n" + EscapeSequences.RESET_TEXT_COLOR + ">>> " + EscapeSequences.SET_TEXT_COLOR_BLUE);
-//  }
 
 }
