@@ -10,18 +10,19 @@ public class Repl {
     client = new ChessClient(serverUrl);
   }
   public void run() {
-    System.out.println("\uD83D\uDC36 Welcome to the Chess. Sign in or Register to start.");
-    System.out.print(client.help());
+    System.out.println(EscapeSequences.SET_TEXT_BOLD + "Welcome to Chess. Sign in or Register to start." + EscapeSequences.RESET_TEXT_COLOR);
+    System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN + client.help() + EscapeSequences.RESET_TEXT_COLOR);
+    //System.out.print(client.help());
 
     Scanner scanner = new Scanner(System.in);
     var result = "";
     while (!result.equals("quit")) {
-      printPrompt();
+     // printPrompt();
       String line = scanner.nextLine();
 
       try {
         result = client.eval(line);
-        System.out.print(EscapeSequences.SET_TEXT_ITALIC + result);
+        System.out.print(result);
       } catch (Throwable e) {
         var msg = e.toString();
         System.out.print(msg);
@@ -30,8 +31,8 @@ public class Repl {
     System.out.println();
   }
 
-  private void printPrompt() {
-    System.out.print("\n" + EscapeSequences.RESET_TEXT_COLOR + ">>> " + EscapeSequences.SET_TEXT_COLOR_BLUE);
-  }
+//  private void printPrompt() {
+//    System.out.print("\n" + EscapeSequences.RESET_TEXT_COLOR + ">>> " + EscapeSequences.SET_TEXT_COLOR_BLUE);
+//  }
 
 }

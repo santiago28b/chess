@@ -19,10 +19,6 @@ public class ChessClient {
   private ArrayList<GameData>  listedGames = new ArrayList<>();
   private MakeBoard makeBoard; // Add this to the class as a field
 
-
-
-
-
   public  ChessClient(String serverUrl) {
     server = new ServerFacade(serverUrl);
     makeBoard = new MakeBoard(new ChessBoard());
@@ -48,14 +44,40 @@ public class ChessClient {
         case "creategame" -> createGame();
         case "list" -> listGames();
         case "play" -> playGame();
-//        case "observegame" -> observeGame();
+       case "observe" -> observeGame();
         case "logout" -> logout();
         case "help" -> help();
         case "quit" -> "quit";
-        default -> "Invalid command. Type 'help' for available commands.";
+        default -> "Invalid command. Type 'help' for available commands. \n";
       };
     }
     return "unknown";
+  }
+
+  private String observeGame() {
+    assertSignedIn();
+    listGames();
+    if (listedGames == null || listedGames.isEmpty()) {
+      return "No games available to observe.";
+    }
+    int gameNumber = -1 ;
+    while (gameNumber < 1 || gameNumber > listedGames.size()) {
+      System.out.println("Enter the number of the game you want to observe (1 to " + listedGames.size() + "): ");
+      try {
+        gameNumber = Integer.parseInt(scanner.nextLine());
+        if (gameNumber < 1 || gameNumber > listedGames.size()) {
+          System.out.println("Invalid game number. Please try again.");
+        }
+      } catch (NumberFormatException e) {
+        System.out.println("Invalid input. Please enter a valid number.");
+      }
+    }
+    GameData selectedGame = listedGames.get(gameNumber - 1);
+    System.out.println("Successfully entered game '" + selectedGame.gameName() +".");
+    makeBoard.renderBoard(true);
+    System.out.println("\n");
+    makeBoard.renderBoard(false);
+    return "you are an observer! \n";
   }
 
   private String playGame() {
@@ -89,7 +111,7 @@ public class ChessClient {
       makeBoard.renderBoard(whitePerspective);
       System.out.println("\n");
       makeBoard.renderBoard(!whitePerspective);
-      return "Game is ready to play!";
+      return "Game is ready to play! \n";
     } catch (ServerFacade.ResponseException e) {
       return "Failed to join game: " + e.getMessage();
     }
@@ -142,7 +164,7 @@ public class ChessClient {
   private String logout() {
     assertSignedIn();
     state = State.SIGNEDOUT;
-    return String.format("%s see ya!", visitorName);
+    return String.format("%s see ya! \n", visitorName);
   }
 
   private void assertSignedIn() {
@@ -167,7 +189,7 @@ public class ChessClient {
       authData = server.login(existent);
       state = State.SIGNEDIN;
       visitorName = username;
-      return "Login successful! Welcome, " + visitorName;
+      return "Login successful! Welcome, " + visitorName+"."+ " \n " + help();
     } catch (ServerFacade.ResponseException e) {
       return "login failed, probably invalid credentials. " + e.getMessage();
     }
@@ -191,7 +213,7 @@ public class ChessClient {
       server.register(newUser);
       state = State.SIGNEDIN;
       visitorName = username;
-      return "Registration successful! You are now signed in as " + visitorName;
+      return "Registration successful! You are now signed in as " + visitorName+"\n" + help();
     } catch (ServerFacade.ResponseException e) {
       return "Registration failed, probably invalid credentials. " + e.getMessage();
     }
@@ -218,21 +240,20 @@ public class ChessClient {
 
   public String help() {
     if (state == State.SIGNEDOUT) {
-      return """
-                    - Register
-                    - Login
-                    - Quit
-                    - Help
+      return EscapeSequences.SET_TEXT_COLOR_BLUE + """ 
+                    -  register to : Register
+                    - Login: to Sign in
+                    - Quit: to exit the app
+                    - Help : tho show commands
                     """;
     }
-    return """
-                - list games
-                - Observe game
-                - list game
-                - create Game
-                - logout
-                - join Game
-                - quit
+    return EscapeSequences.SET_TEXT_COLOR_BLUE + """
+                - list: to list games
+                - observe: Observe game
+                - create: to make a new Game
+                - logout: to Sign out
+                - play: to join Game.
+                - quit: to exit the app
                 """;
   }
 
