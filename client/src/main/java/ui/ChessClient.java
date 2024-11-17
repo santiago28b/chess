@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessBoard;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -12,16 +13,20 @@ public class ChessClient {
 
   private String visitorName = null;
   private final ServerFacade server;
-  //private final String serverUrl;
   private State state = State.SIGNEDOUT;
   private AuthData authData;
   Scanner scanner = new Scanner(System.in);
+  private ArrayList<GameData>  listedGames = new ArrayList<>();
+  private MakeBoard makeBoard; // Add this to the class as a field
+
 
 
 
 
   public  ChessClient(String serverUrl) {
     server = new ServerFacade(serverUrl);
+    makeBoard = new MakeBoard(new ChessBoard());
+
 
   }
 
@@ -42,7 +47,7 @@ public class ChessClient {
       return switch (cmd) {
         case "creategame" -> createGame();
         case "list" -> listGames();
-//        case "joingame" -> joinGame();
+        case "play" -> playGame();
 //        case "observegame" -> observeGame();
         case "logout" -> logout();
         case "help" -> help();
@@ -52,6 +57,44 @@ public class ChessClient {
     }
     return "unknown";
   }
+
+  private String playGame() {
+    assertSignedIn();
+    listGames();
+    if (listedGames.isEmpty()) {
+      return "No games available to join.";
+    }
+    int gameNumber = -1 ;
+    while (gameNumber < 1 || gameNumber > listedGames.size()) {
+      System.out.println("Enter the number of the game you want to join (1 to " + listedGames.size() + "): ");
+      try {
+        gameNumber = Integer.parseInt(scanner.nextLine());
+        if (gameNumber < 1 || gameNumber > listedGames.size()) {
+          System.out.println("Invalid game number. Please try again.");
+        }
+      } catch (NumberFormatException e) {
+        System.out.println("Invalid input. Please enter a valid number.");
+      }
+    }
+    GameData selectedGame = listedGames.get(gameNumber - 1);
+    System.out.println("Enter the color you want to play (WHITE or BLACK): ");
+    String color = scanner.nextLine().toUpperCase();
+    if (!color.equals("WHITE") && !color.equals("BLACK")) {
+      return "Invalid color. Please enter 'WHITE' or 'BLACK'.";
+    }
+    try {
+      server.joinGame(color, selectedGame.gameID(), authData);
+      System.out.println("Successfully joined game '" + selectedGame.gameName() + "' as " + color + ".");
+      boolean whitePerspective = color.equals("WHITE");
+      makeBoard.renderBoard(whitePerspective);
+      System.out.println("\n");
+      makeBoard.renderBoard(!whitePerspective);
+      return "Game is ready to play!";
+    } catch (ServerFacade.ResponseException e) {
+      return "Failed to join game: " + e.getMessage();
+    }
+  }
+
 
   private String listGames() {
     assertSignedIn();
@@ -64,6 +107,7 @@ public class ChessClient {
     if(games.isEmpty()) {
       return "No games found";
     } else{
+      listedGames = games;
       StringBuilder result = new StringBuilder("List of Available Games:\n");
       int gameCount = 1;
      for(GameData game: games) {
