@@ -52,7 +52,7 @@ public class MakeBoard {
     }
 
     private String putPiece(ChessPiece piece){
-      if (piece == null) return EscapeSequences.EMPTY;
+      if (piece == null){return EscapeSequences.EMPTY;}
         switch (piece.getPieceType()){
           case KING:
             return piece.getTeamColor() == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_KING: EscapeSequences.BLACK_KING;
